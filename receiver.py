@@ -21,8 +21,8 @@ class Receiver(threading.Thread):
         connection = pika.BlockingConnection(pika.ConnectionParameters(
             'rabbitmq',
             5672,
-            os.getenv('RABBITMQ_VHOST', 'wish_swap'),
-            pika.PlainCredentials(os.getenv('RABBITMQ_USER', 'wish_swap'), os.getenv('RABBITMQ_PASSWORD', 'wish_swap')),
+            os.getenv('RABBITMQ_DEFAULT_VHOST', 'wish_swap'),
+            pika.PlainCredentials(os.getenv('RABBITMQ_DEFAULT_USER', 'wish_swap'), os.getenv('RABBITMQ_DEFAULT_PASS', 'wish_swap')),
         ))
         channel = connection.channel()
         channel.queue_declare(
