@@ -29,19 +29,17 @@ services:
       context: .
       dockerfile: dockerfiles/scanner.Dockerfile
     depends_on:
+      - db
       - rabbitmq
-    networks:
-      wish-swap-net:
     volumes:
       - ./scanner/settings:/app/scanner/settings
+    networks:
+      wish-swap-net:
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    #container_name: rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER:
-      RABBITMQ_DEFAULT_PASS:
-      RABBITMQ_DEFAULT_VHOST:
-    networks:
+      env_file: .env
+      restart: unless-stopped
+      networks:
       wish-swap-net:
   rates_checker:
     env_file: .env
