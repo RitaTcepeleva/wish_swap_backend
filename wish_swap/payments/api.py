@@ -1,7 +1,7 @@
 from wish_swap.payments.models import Payment
 from wish_swap.transfers.models import Transfer
 from wish_swap.transfers.api import eth_like_token_mint
-from wish_swap.settings import NETWORKS
+from wish_swap.settings import BLOCKCHAINS
 
 
 def save_payment(message):
@@ -9,7 +9,7 @@ def save_payment(message):
     payment = Payment(
         address=message['address'],
         tx_hash=message['tx_hash'],
-        currency=NETWORKS[blockchain]['token']['symbol'],
+        currency=BLOCKCHAINS[blockchain]['token']['symbol'],
         amount=message['amount'],
     )
     payment.save()
@@ -20,7 +20,7 @@ def create_transfer(message, payment, amount):
     transfer = Transfer(
         payment=payment,
         address=message['to_address'],
-        currency=message['to_currency'],
+        currency=message['to_blockchain'],
         amount=amount,
     )
     transfer.save()
@@ -30,7 +30,7 @@ def create_transfer(message, payment, amount):
 def parse_payment_message(message):
     tx_hash = message['transactionHash']
     blockchain = message['from_blockchain']
-    currency = NETWORKS[blockchain]['token']['symbol']
+    currency = BLOCKCHAINS[blockchain]['token']['symbol']
     if not Payment.objects.filter(tx_hash=tx_hash, currency=currency).count() > 0:
         payment = save_payment(message)
 
@@ -43,7 +43,7 @@ def parse_payment_message(message):
         if blockchain in ('Ethereum', 'Binance-Smart-Chain'):
             try:
                 transfer.tx_hash = eth_like_token_mint(
-                    network=NETWORKS[blockchain],
+                    blockchain=BLOCKCHAINS[blockchain],
                     address=transfer.address,
                     amount=transfer.amount
                 )
