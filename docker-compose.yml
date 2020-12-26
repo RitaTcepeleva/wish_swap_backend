@@ -37,9 +37,9 @@ services:
       wish-swap-net:
   rabbitmq:
     image: rabbitmq:3-management-alpine
-      env_file: .env
-      restart: unless-stopped
-      networks:
+    env_file: .env
+    restart: unless-stopped
+    networks:
       wish-swap-net:
   rates_checker:
     env_file: .env
