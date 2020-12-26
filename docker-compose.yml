@@ -18,9 +18,30 @@ services:
       - "${DOCKER_EXPOSE_PORT?8000}:8000"
     depends_on:
       - db
+      - rabbitmq
     restart: unless-stopped
     volumes:
       - ./static:/app/static
+    networks:
+      wish-swap-net:
+  scanner:
+    build:
+      context: .
+      dockerfile: dockerfiles/scanner.Dockerfile
+    depends_on:
+      - rabbitmq
+    networks:
+      wish-swap-net:
+    volumes:
+      - ./scanner/settings:/app/scanner/settings
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    #container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER:
+      RABBITMQ_DEFAULT_PASS:
+      RABBITMQ_DEFAULT_VHOST:
     networks:
       wish-swap-net:
 
