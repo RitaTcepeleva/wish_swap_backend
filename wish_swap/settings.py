@@ -74,8 +74,12 @@ WSGI_APPLICATION = 'wish_swap.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'wish_swap'),
+        'USER': os.getenv('POSTGRES_USER', 'wish_swap'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'wish_swap'),
+        'HOST': os.getenv('POSTGRES_HOST', '127.0.0.1'),
+        'PORT': '5432',
     }
 }
 
