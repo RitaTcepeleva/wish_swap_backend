@@ -122,6 +122,8 @@ GAS_LIMIT = 500000
 
 BNBCLI_PATH = './cli/testnet/0.7.2/linux'
 
+RATES_CHECKER_TIMEOUT = 60 * 10
+
 try:
     from wish_swap.settings_local import *
 except ImportError:

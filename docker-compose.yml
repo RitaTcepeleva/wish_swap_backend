@@ -34,7 +34,6 @@ services:
       wish-swap-net:
     volumes:
       - ./scanner/settings:/app/scanner/settings
-
   rabbitmq:
     image: rabbitmq:3-management-alpine
     #container_name: rabbitmq
@@ -44,7 +43,16 @@ services:
       RABBITMQ_DEFAULT_VHOST:
     networks:
       wish-swap-net:
-
+  rates_checker:
+    env_file: .env
+    build:
+      context: .
+      dockerfile: dockerfiles/rates_checker.Dockerfile
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+     wish-swap-net:
 
 networks:
   wish-swap-net:

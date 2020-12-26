@@ -1,5 +1,5 @@
 from django.db import models
-from wish_swap.settings import CRYPTOCOMPARE_API_KEY, CRYPTOCOMPARE_API_URL
+from wish_swap.settings import COINMARKETCAP_API_URL, COINMARKETCAP_API_KEY
 import json
 import requests
 
@@ -11,19 +11,22 @@ class WishCommission(models.Model):
 class UsdRate(models.Model):
     ETH = models.FloatField()
     BNB = models.FloatField()
+    WISH = models.FloatField()
     datetime = models.DateTimeField(auto_now=True)
 
     def update(self):
-        payload = {
-            'fsym': 'USD',
-            'tsyms': ['BNB', 'ETH'],
-            'api_key': CRYPTOCOMPARE_API_KEY,
+        headers = {
+            'Accepts': 'application/json',
+            'X-CMC_PRO_API_KEY': COINMARKETCAP_API_KEY,
         }
-        response = requests.get(CRYPTOCOMPARE_API_URL, params=payload)
-        if response.status_code != 200:
-            raise Exception(f'update rates: Cannon get rates')
-        response_data = json.loads(response.text)
+        params = {'symbol': 'WISH,ETH,BNB'}
 
-        self.ETH = response_data['ETH']
-        self.BNB = response_data['BNB']
+        response = requests.get(url=COINMARKETCAP_API_URL, headers=headers, params=params)
+        if response.status_code != 200:
+            raise Exception('Cannot update rates')
+        response_data = json.loads(response.text)['data']
+
+        for currency, data in response_data.items():
+            usd_rate = data['quote']['USD']['price']
+            setattr(self, currency, usd_rate)
         self.save()
