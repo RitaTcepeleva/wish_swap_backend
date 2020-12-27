@@ -5,10 +5,10 @@ from wish_swap.settings import BLOCKCHAINS
 
 
 def save_payment(message):
-    blockchain = message['from_blockchain']
+    blockchain = message['fromBlockchain']
     payment = Payment(
         address=message['address'],
-        tx_hash=message['tx_hash'],
+        tx_hash=message['transactionHash'],
         currency=BLOCKCHAINS[blockchain]['token']['symbol'],
         amount=message['amount'],
     )
@@ -17,20 +17,20 @@ def save_payment(message):
 
 
 def create_transfer(message, payment, amount):
+    blockchain = message['blockchain']
     transfer = Transfer(
         payment=payment,
-        address=message['to_address'],
-        currency=message['to_blockchain'],
+        address=message['memo'],
+        currency=BLOCKCHAINS[blockchain]['token']['symbol'],
         amount=amount,
     )
     transfer.save()
     return transfer
 
 
-def parse_payment_message(message):
+def parse_payment(message):
     tx_hash = message['transactionHash']
-    blockchain = message['from_blockchain']
-    currency = BLOCKCHAINS[blockchain]['token']['symbol']
+    currency = BLOCKCHAINS[message['fromBlockchain']]['token']['symbol']
     if not Payment.objects.filter(tx_hash=tx_hash, currency=currency).count() > 0:
         payment = save_payment(message)
 
@@ -39,7 +39,7 @@ def parse_payment_message(message):
 
         transfer = create_transfer(message, payment, amount)
 
-        blockchain = message['to_blockchain']
+        blockchain = message['blockchain']
         if blockchain in ('Ethereum', 'Binance-Smart-Chain'):
             try:
                 transfer.tx_hash = eth_like_token_mint(
@@ -57,4 +57,4 @@ def parse_payment_message(message):
         else:
             print('parsing payment: Unknown blockchain', flush=True)
     else:
-        print(f'parsing payment:: Tx {tx_hash} already registered', flush=True)
+        print(f'parsing payment: Tx {tx_hash} already registered', flush=True)

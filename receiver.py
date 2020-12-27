@@ -10,6 +10,7 @@ import django
 django.setup()
 
 from wish_swap.settings import BLOCKCHAINS
+from wish_swap.payments.api import parse_payment
 
 
 class Receiver(threading.Thread):
@@ -39,9 +40,9 @@ class Receiver(threading.Thread):
         channel.start_consuming()
 
     def payment(self, message):
-        message['from_blockchain'] = self.blockchain
+        message['fromBlockchain'] = self.blockchain
         print('receiver: Payment message has been received', flush=True)
-        # parse_payment_message(message)
+        parse_payment(message)
 
     def callback(self, ch, method, properties, body):
         print('receiver: Received message data:', method, properties, body, flush=True)
