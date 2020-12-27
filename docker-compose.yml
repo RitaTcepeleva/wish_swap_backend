@@ -25,6 +25,7 @@ services:
     networks:
       wish-swap-net:
   scanner:
+    env_file: .env
     build:
       context: .
       dockerfile: dockerfiles/scanner.Dockerfile
