@@ -44,7 +44,7 @@ class EthPaymentMonitor:
         
             tx_receipt = network.get_tx_receipt(tx.tx_hash)
             if tx_receipt.success==True:
-                success='SUCCESS'
+                success='COMMITED'
             else:
                 success='ERROR'
             print(tx.outputs[0].raw_output_script)
@@ -53,7 +53,7 @@ class EthPaymentMonitor:
                 'transactionHash': tx.tx_hash,
                 'amount': amount,
                 'memo': swap_to,
-                'success': success,
+                'status': success,
                 'blockchain': blockchain
             }
             
