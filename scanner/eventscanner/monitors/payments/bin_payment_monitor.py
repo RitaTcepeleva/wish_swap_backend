@@ -30,7 +30,7 @@ class BinPaymentMonitor:
                         'transactionHash': transaction.tx_hash,
                         'amount': int(str(amount).replace('.', '')),
                         'memo': transaction.outputs[0].raw_output_script[1:],
-                        'success': 'SUCCESS',
+                        'status': 'COMMITED',
                         'blockchain': BLOCKCHAINS_BY_NUMBER[int(transaction.outputs[0].raw_output_script[0])]
                          }
 
