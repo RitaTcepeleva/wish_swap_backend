@@ -44,7 +44,7 @@ class EthPaymentMonitor:
         
             tx_receipt = network.get_tx_receipt(tx.tx_hash)
             if tx_receipt.success==True:
-                success='COMMITED'
+                success='COMMITTED'
             else:
                 success='ERROR'
             print(tx.outputs[0].raw_output_script)
