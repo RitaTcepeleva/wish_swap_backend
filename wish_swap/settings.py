@@ -131,6 +131,12 @@ BNBCLI_PATH = './cli/testnet/0.7.2/linux'
 
 RATES_CHECKER_TIMEOUT = 60 * 10
 
+BINANCE_TRANSFER_FEE = 0.000375
+
+BLOCKCHAIN_DECIMALS = 10 ** 18
+
+TOKEN_DECIMALS = 10 ** 8
+
 try:
     from wish_swap.settings_local import *
 except ImportError:

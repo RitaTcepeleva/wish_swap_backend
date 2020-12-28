@@ -4,17 +4,17 @@ from subprocess import Popen, PIPE
 import json
 
 
-def eth_like_token_mint(blockchain, address, amount):
-    w3 = Web3(HTTPProvider(blockchain['node']))
+def eth_like_token_mint(blockchain_info, address, amount):
+    w3 = Web3(HTTPProvider(blockchain_info['node']))
     tx_params = {
-        'nonce': w3.eth.getTransactionCount(blockchain['address'], 'pending'),
+        'nonce': w3.eth.getTransactionCount(blockchain_info['address'], 'pending'),
         'gasPrice': w3.eth.gasPrice,
         'gas': GAS_LIMIT,
     }
-    token = blockchain['token']
+    token = blockchain_info['token']
     contract = w3.eth.contract(address=token['address'], abi=token['abi'])
     initial_tx = contract.functions.mintToUser(Web3.toChecksumAddress(address), amount).buildTransaction(tx_params)
-    signed_tx = w3.eth.account.signTransaction(initial_tx, blockchain['private'])
+    signed_tx = w3.eth.account.signTransaction(initial_tx, blockchain_info['private'])
     tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
     tx_hex = tx_hash.hex()
     return tx_hex
