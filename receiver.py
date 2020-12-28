@@ -45,7 +45,7 @@ class Receiver(threading.Thread):
         parse_payment(message)
 
     def callback(self, ch, method, properties, body):
-        print('receiver: Received message data:', method, properties, body, flush=True)
+        print('receiver: received', method, properties, body, flush=True)
         try:
             message = json.loads(body.decode())
             if message.get('status', '') == 'COMMITTED':

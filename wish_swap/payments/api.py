@@ -38,13 +38,20 @@ def parse_payment(message):
     from_currency = BLOCKCHAINS[from_blockchain]['token']['symbol']
     to_currency = BLOCKCHAINS[to_blockchain]['token']['symbol']
     if not Payment.objects.filter(tx_hash=tx_hash, currency=from_currency).count() > 0:
-        payment = save_payment(tx_hash, from_address, from_currency, amount)
+        payment = Payment(address=from_address, tx_hash=tx_hash, currency=from_currency, amount=amount)
+        payment.save()
+        print(f'parsing payment: Payment {payment.tx_hash} from {payment.address} '
+              f'for {payment.amount} {payment.currency} successfully saved', flush=True)
+
         commission = calculate_commission_in_wish(to_blockchain, to_address, amount)
+
+        print(f'parsing payment: Transfer commission is {commission} WISH', flush=True)
         transfer = create_transfer(payment, to_address, to_currency, amount - commission)
 
         wish_commission_obj = WishCommission.objects.first() or WishCommission()
         wish_commission_obj.amount += commission
         wish_commission_obj.save()
+        print(f'parsing payment: Total commission amount is {wish_commission_obj.amount} WISH', flush=True)
 
         if to_blockchain in ('Ethereum', 'Binance-Smart-Chain'):
             try:
@@ -54,10 +61,14 @@ def parse_payment(message):
                     amount=transfer.amount,
                 )
                 transfer.status = 'TRANSFERRED'
+                transfer.save()
+                print(f'parsing payment: Transfer {transfer.tx_hash} to {transfer.address} '
+                      f'for {transfer.amount} {transfer.currency} successfully saved', flush=True)
             except Exception as e:
                 transfer.tx_error = repr(e)
                 transfer.status = 'FAIL'
-            transfer.save()
+                transfer.save()
+                print(f'parsing payment: Transfer failed with exception {transfer.tx_error}', flush=True)
         elif to_blockchain == 'Binance-Chain':
             binance_transfer(BLOCKCHAINS[to_blockchain], to_address, amount)
         else:
