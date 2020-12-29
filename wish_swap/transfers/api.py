@@ -21,7 +21,7 @@ def eth_like_token_mint(blockchain_info, address, amount):
 
 
 def binance_transfer(blockchain, address, amount):
-    command_list = [BNBCLI_PATH, 'send',
+    command_list = ['tbnbcli', 'send',
                     '--from', blockchain['key'],
                     '--to', address,
                     '--amount', f'{amount}:{blockchain["token"]["symbol"]}',
