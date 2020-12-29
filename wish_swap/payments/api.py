@@ -74,7 +74,20 @@ def parse_payment(message):
                 transfer.save()
                 print('parsing payment: Transfer saved', flush=True)
         elif to_blockchain == 'Binance-Chain':
-            binance_transfer(BLOCKCHAINS[to_blockchain], to_address, amount)
+            is_ok, transfer_data = binance_transfer(BLOCKCHAINS[to_blockchain], to_address, amount)
+            if is_ok:
+                transfer.tx_hash = transfer_data
+                transfer.status = 'TRANSFERRED'
+                print(f'parsing payment: Successful transfer {transfer.tx_hash} to {transfer.address} '
+                      f'for {transfer.amount / TOKEN_DECIMALS} {transfer.currency}', flush=True)
+                transfer.save()
+                print('parsing payment: Transfer saved', flush=True)
+            else:
+                transfer.tx_error = transfer_data
+                transfer.status = 'FAIL'
+                print(f'parsing payment: Transfer failed with error {transfer.tx_error}', flush=True)
+                transfer.save()
+                print('parsing payment: Transfer saved', flush=True)
         else:
             print('parsing payment: Unknown blockchain', flush=True)
     else:
