@@ -7,6 +7,6 @@ class Transfer(models.Model):
     address = models.CharField(max_length=50)
     tx_hash = models.CharField(max_length=100)
     tx_error = models.TextField(default='')
-    currency = models.CharField(max_length=10)
+    currency = models.CharField(max_length=50)
     amount = models.DecimalField(max_digits=100, decimal_places=0)
     status = models.CharField(max_length=50, default='WAITING FOR TRANSFER')
