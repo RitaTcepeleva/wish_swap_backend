@@ -6,17 +6,6 @@ from wish_swap.rates.api import calculate_wish_fee
 from wish_swap.rates.models import WishCommission
 
 
-def save_payment(tx_hash, address, currency, amount):
-    payment = Payment(
-        address=address,
-        tx_hash=tx_hash,
-        currency=currency,
-        amount=amount,
-    )
-    payment.save()
-    return payment
-
-
 def create_transfer(payment, address, currency, amount):
     transfer = Transfer(
         payment=payment,
@@ -44,7 +33,6 @@ def parse_payment(message):
               f'for {payment.amount / TOKEN_DECIMALS} {payment.currency} successfully saved', flush=True)
 
         wish_fee = calculate_wish_fee(to_blockchain, to_address, amount)
-
         print(f'parsing payment: Transfer commission is {wish_fee / TOKEN_DECIMALS} WISH', flush=True)
         transfer = create_transfer(payment, to_address, to_currency, amount - wish_fee)
 
