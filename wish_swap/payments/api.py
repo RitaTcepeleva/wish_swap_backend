@@ -2,7 +2,7 @@ from wish_swap.payments.models import Payment
 from wish_swap.transfers.models import Transfer
 from wish_swap.transfers.api import eth_like_token_mint, binance_transfer
 from wish_swap.settings import BLOCKCHAINS, TOKEN_DECIMALS
-from wish_swap.rates.api import calculate_commission_in_wish
+from wish_swap.rates.api import calculate_wish_fee
 from wish_swap.rates.models import WishCommission
 
 
@@ -43,13 +43,13 @@ def parse_payment(message):
         print(f'parsing payment: Payment {payment.tx_hash} from {payment.address} '
               f'for {payment.amount / TOKEN_DECIMALS} {payment.currency} successfully saved', flush=True)
 
-        commission = calculate_commission_in_wish(to_blockchain, to_address, amount)
+        wish_fee = calculate_wish_fee(to_blockchain, to_address, amount)
 
-        print(f'parsing payment: Transfer commission is {commission / TOKEN_DECIMALS} WISH', flush=True)
-        transfer = create_transfer(payment, to_address, to_currency, amount - commission)
+        print(f'parsing payment: Transfer commission is {wish_fee / TOKEN_DECIMALS} WISH', flush=True)
+        transfer = create_transfer(payment, to_address, to_currency, amount - wish_fee)
 
         wish_commission_obj = WishCommission.objects.first() or WishCommission()
-        wish_commission_obj.amount += commission
+        wish_commission_obj.amount += wish_fee
         wish_commission_obj.save()
         print('parsing payment: Commission saved', flush=True)
         print(f'parsing payment: Total commission amount is '

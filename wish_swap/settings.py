@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'drf_yasg',
     'wish_swap.payments',
     'wish_swap.transfers',
     'wish_swap.rates',
@@ -126,8 +128,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 GAS_LIMIT = 500000
-
-BNBCLI_PATH = './cli/testnet/0.7.2/linux'
 
 RATES_CHECKER_TIMEOUT = 60 * 10
 

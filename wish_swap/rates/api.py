@@ -3,7 +3,7 @@ from web3 import Web3, HTTPProvider
 from wish_swap.rates.models import UsdRate
 
 
-def calculate_commission_in_wish(blockchain, address, amount):
+def calculate_wish_fee(blockchain, address, amount):
     rate_obj = UsdRate.objects.first()
     if not rate_obj:
         raise Exception('You should run rates_checker.py at least once')
