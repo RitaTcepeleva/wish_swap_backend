@@ -1,5 +1,5 @@
 from web3 import Web3, HTTPProvider
-from wish_swap.settings import GAS_LIMIT, BNBCLI_PATH
+from wish_swap.settings import GAS_LIMIT
 from subprocess import Popen, PIPE
 import json
 
