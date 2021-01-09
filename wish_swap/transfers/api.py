@@ -21,14 +21,14 @@ def eth_like_token_mint(blockchain_info, address, amount):
 
 
 def binance_transfer(blockchain, address, amount):
-    command_list = ['tbnbcli', 'send',
+    command_list = [blockchain['cli'], 'send',
                     '--from', blockchain['key'],
                     '--to', address,
                     '--amount', f'{amount}:{blockchain["token"]["symbol"]}',
                     '--chain-id', blockchain['chain-id'],
                     '--node', blockchain['node'],
                     '--json']
-
+    print(command_list)
     process = Popen(command_list, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate(input=(blockchain['key-password'] + '\n').encode())
     is_ok = process.returncode == 0
