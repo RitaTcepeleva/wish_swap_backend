@@ -6,7 +6,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 print(BASE_DIR)
 sys.path.append(BASE_DIR)
 from scanner.networks import BinMaker, EthMaker
-from wish_swap.settings_local import BLOCKCHAINS
+from wish_swap.settings_local import NETWORKS
 from scanner.eventscanner.queue.pika_handler import get_rabbitmq_connection
 
 networks = {
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     conn.close()
 
     for network_name, network_maker in networks.items():
-        scan = ScanEntrypoint(network_name, network_maker, BLOCKCHAINS[network_name]['scanner']['polling_interval'],
-                              BLOCKCHAINS[network_name]['scanner']['commitment_chain_length'])
+        scan = ScanEntrypoint(network_name, network_maker, NETWORKS[network_name]['scanner']['polling_interval'],
+                              NETWORKS[network_name]['scanner']['commitment_chain_length'])
         scan.start()
 

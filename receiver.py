@@ -9,14 +9,14 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wish_swap.settings')
 import django
 django.setup()
 
-from wish_swap.settings import BLOCKCHAINS
+from wish_swap.settings import NETWORKS
 from wish_swap.payments.api import parse_payment
 
 
 class Receiver(threading.Thread):
-    def __init__(self, blockchain):
+    def __init__(self, network):
         super().__init__()
-        self.blockchain = blockchain
+        self.network = network
 
     def run(self):
         connection = pika.BlockingConnection(pika.ConnectionParameters(
@@ -27,20 +27,20 @@ class Receiver(threading.Thread):
         ))
         channel = connection.channel()
         channel.queue_declare(
-                queue=self.blockchain,
+                queue=self.network,
                 durable=True,
                 auto_delete=False,
                 exclusive=False
         )
         channel.basic_consume(
-            queue=self.blockchain,
+            queue=self.network,
             on_message_callback=self.callback
         )
-        print(f'receiver: `{self.blockchain}` queue was started', flush=True)
+        print(f'receiver: `{self.network}` queue was started', flush=True)
         channel.start_consuming()
 
     def payment(self, message):
-        message['fromBlockchain'] = self.blockchain
+        message['fromNetwork'] = self.network
         print('receiver: Payment message has been received', flush=True)
         parse_payment(message)
 
@@ -60,6 +60,6 @@ class Receiver(threading.Thread):
         print('receiver: Unknown message has been received', message, flush=True)
 
 
-for blockchain in BLOCKCHAINS.keys():
-    receiver = Receiver(blockchain)
+for network in NETWORKS.keys():
+    receiver = Receiver(network)
     receiver.start()

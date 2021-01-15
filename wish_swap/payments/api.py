@@ -1,7 +1,7 @@
 from wish_swap.payments.models import Payment
 from wish_swap.transfers.models import Transfer
 from wish_swap.transfers.api import eth_like_token_mint, binance_transfer
-from wish_swap.settings import BLOCKCHAINS, TOKEN_DECIMALS
+from wish_swap.settings import NETWORKS, TOKEN_DECIMALS
 from wish_swap.rates.api import calculate_wish_fee
 from wish_swap.rates.models import WishCommission
 
@@ -19,20 +19,20 @@ def create_transfer(payment, address, currency, amount):
 
 def parse_payment(message):
     tx_hash = message['transactionHash']
-    from_blockchain = message['fromBlockchain']
-    to_blockchain = message['blockchain']
+    from_network = message['fromNetwork']
+    to_network = message['network']
     from_address = message['address']
     to_address = message['memo']
     amount = message['amount']
-    from_currency = BLOCKCHAINS[from_blockchain]['token']['symbol']
-    to_currency = BLOCKCHAINS[to_blockchain]['token']['symbol']
+    from_currency = NETWORKS[from_network]['token']['symbol']
+    to_currency = NETWORKS[to_network]['token']['symbol']
     if not Payment.objects.filter(tx_hash=tx_hash, currency=from_currency).count() > 0:
         payment = Payment(address=from_address, tx_hash=tx_hash, currency=from_currency, amount=amount)
         payment.save()
         print(f'parsing payment: Payment {payment.tx_hash} from {payment.address} '
               f'for {payment.amount / TOKEN_DECIMALS} {payment.currency} successfully saved', flush=True)
 
-        wish_fee = calculate_wish_fee(to_blockchain, to_address, amount)
+        wish_fee = calculate_wish_fee(to_network, to_address, amount)
         print(f'parsing payment: Transfer commission is {wish_fee / TOKEN_DECIMALS} WISH', flush=True)
         transfer = create_transfer(payment, to_address, to_currency, amount - wish_fee)
 
@@ -43,10 +43,10 @@ def parse_payment(message):
         print(f'parsing payment: Total commission amount is '
               f'{wish_commission_obj.amount / TOKEN_DECIMALS} WISH', flush=True)
 
-        if to_blockchain in ('Ethereum', 'Binance-Smart-Chain'):
+        if to_network in ('Ethereum', 'Binance-Smart-Chain'):
             try:
                 transfer.tx_hash = eth_like_token_mint(
-                    blockchain_info=BLOCKCHAINS[to_blockchain],
+                    network=NETWORKS[to_network],
                     address=transfer.address,
                     amount=transfer.amount,
                 )
@@ -61,8 +61,8 @@ def parse_payment(message):
                 print(f'parsing payment: Transfer failed with exception {transfer.tx_error}', flush=True)
                 transfer.save()
                 print('parsing payment: Transfer saved', flush=True)
-        elif to_blockchain == 'Binance-Chain':
-            is_ok, transfer_data = binance_transfer(BLOCKCHAINS[to_blockchain], to_address, amount)
+        elif to_network == 'Binance-Chain':
+            is_ok, transfer_data = binance_transfer(NETWORKS[to_network], to_address, amount)
             if is_ok:
                 transfer.tx_hash = transfer_data
                 transfer.status = 'TRANSFERRED'

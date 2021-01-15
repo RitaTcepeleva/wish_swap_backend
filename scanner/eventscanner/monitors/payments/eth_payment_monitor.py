@@ -1,7 +1,7 @@
 from scanner.eventscanner.queue.pika_handler import send_to_backend
 #from mywish_models.models import ExchangeRequests, session
 from scanner.scanner.events.block_event import BlockEvent
-from wish_swap.settings_local import BLOCKCHAINS_BY_NUMBER, BLOCKCHAINS, ERC20_TOKENS
+from wish_swap.settings_local import BLOCKCHAINS_BY_NUMBER, NETWORKS, ERC20_TOKENS
 
 
 class EthPaymentMonitor:
@@ -37,7 +37,7 @@ class EthPaymentMonitor:
             print(processed_receipt)
             transfer_from = processed_receipt[0].args.user
             amount = processed_receipt[0].args.amount
-            blockchain = BLOCKCHAINS_BY_NUMBER[processed_receipt[0].args.blockchain]
+            network = BLOCKCHAINS_BY_NUMBER[processed_receipt[0].args.blockchain]
             swap_to = processed_receipt[0].args.newAddress
 
         
@@ -53,7 +53,7 @@ class EthPaymentMonitor:
                 'amount': amount,
                 'memo': swap_to,
                 'status': success,
-                'blockchain': blockchain
+                'network': network
             }
             
             send_to_backend(cls.event_type, cls.queue, message)
@@ -63,5 +63,4 @@ class BSPaymentMonitor(EthPaymentMonitor):
     network_types = ['Binance-Smart-Chain']
     event_type = 'payment'
     queue = 'Binance-Smart-Chain'
-    token = BLOCKCHAINS['Binance-Smart-Chain']['token']
     tokens = ERC20_TOKENS

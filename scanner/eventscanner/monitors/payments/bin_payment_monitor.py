@@ -1,14 +1,14 @@
 from scanner.eventscanner.queue.pika_handler import send_to_backend
 from scanner.scanner.events.block_event import BlockEvent
-from wish_swap.settings_local import BLOCKCHAINS_BY_NUMBER, BLOCKCHAINS
+from wish_swap.settings_local import BLOCKCHAINS_BY_NUMBER, NETWORKS
 
 
 class BinPaymentMonitor:
     network_types = ['Binance-Chain']
     event_type = 'payment'
     queue = 'Binance-Chain'
-    allowed = BLOCKCHAINS['Binance-Chain']['token']['address']
-    assets = BLOCKCHAINS['Binance-Chain']['token']['symbol']
+    allowed = NETWORKS['Binance-Chain']['token']['address']
+    assets = NETWORKS['Binance-Chain']['token']['symbol']
 
     @classmethod
     def on_new_block_event(cls, block_event: BlockEvent):
@@ -29,7 +29,7 @@ class BinPaymentMonitor:
                     'amount': int(str(amount).replace('.', '')),
                     'memo': transaction.outputs[0].raw_output_script[1:],
                     'status': 'COMMITTED',
-                    'blockchain': BLOCKCHAINS_BY_NUMBER[int(transaction.outputs[0].raw_output_script[0])]
+                    'network': BLOCKCHAINS_BY_NUMBER[int(transaction.outputs[0].raw_output_script[0])]
                 }
 
                 send_to_backend(cls.event_type, cls.queue, message)

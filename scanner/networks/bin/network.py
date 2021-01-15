@@ -11,7 +11,7 @@ from scanner.blockchain_common.wrapper_network import WrapperNetwork
 from scanner.blockchain_common.wrapper_output import WrapperOutput
 from scanner.blockchain_common.wrapper_transaction import WrapperTransaction
 from scanner.blockchain_common.wrapper_transaction_receipt import WrapperTransactionReceipt
-from wish_swap.settings_local import BLOCKCHAINS
+from wish_swap.settings_local import NETWORKS
 
 from binance_chain.http import HttpApiClient
 from binance_chain.http import PeerType
@@ -42,8 +42,8 @@ class BinNetwork(WrapperNetwork):
 
     def get_block(self, s_time) -> WrapperBlock:
         print('BINANCE_MAINNET: scanning', flush=True)
-        client_transactions = client.get_transactions(address=BLOCKCHAINS['Binance-Chain']['token']['address'],
-                                                      tx_asset=BLOCKCHAINS['Binance-Chain']['token']['symbol'],
+        client_transactions = client.get_transactions(address=NETWORKS['Binance-Chain']['token']['address'],
+                                                      tx_asset=NETWORKS['Binance-Chain']['token']['symbol'],
                                                       start_time=s_time, limit=1000)
         tx_count = client_transactions['total']
         print(tx_count, flush=True)
@@ -53,8 +53,8 @@ class BinNetwork(WrapperNetwork):
         while tx_count > len(client_transactions):
             offset += 1000
             client_transactions_append = client.get_transactions(
-                address=BLOCKCHAINS['Binance-Chain']['token']['address'],
-                tx_asset=BLOCKCHAINS['Binance-Chain']['token']['symbol'], offset=offset, start_time=s_time, limit=1000)
+                address=NETWORKS['Binance-Chain']['token']['address'],
+                tx_asset=NETWORKS['Binance-Chain']['token']['symbol'], offset=offset, start_time=s_time, limit=1000)
             tx_count = client_transactions_append['total']
             client_transactions += client_transactions_append['tx']
             time.sleep(1)

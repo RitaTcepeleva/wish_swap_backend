@@ -11,20 +11,20 @@ from scanner.blockchain_common.wrapper_network import WrapperNetwork
 from scanner.blockchain_common.wrapper_output import WrapperOutput
 from scanner.blockchain_common.wrapper_transaction import WrapperTransaction
 from scanner.blockchain_common.wrapper_transaction_receipt import WrapperTransactionReceipt
-from wish_swap.settings_local import BLOCKCHAINS, ERC20_TOKENS
+from wish_swap.settings_local import NETWORKS, ERC20_TOKENS
 
 
 class EthNetwork(WrapperNetwork):
 
     def __init__(self, type):
         super().__init__(type)
-        url = BLOCKCHAINS[type]['node']
+        url = NETWORKS[type]['node']
         print(url)
         self.web3 = Web3(Web3.HTTPProvider(url))
         self.web3.middleware_onion.inject(geth_poa_middleware, layer=0)
         tokens = ERC20_TOKENS
-        etherscan_api_key = BLOCKCHAINS[type]['scanner']['etherscan_api_key']
-        is_testnet = BLOCKCHAINS[type]['scanner']['is_testnet']
+        etherscan_api_key = NETWORKS[type]['scanner']['etherscan_api_key']
+        is_testnet = NETWORKS[type]['scanner']['is_testnet']
         self.etherscan = EtherScanAPI(etherscan_api_key, is_testnet) if etherscan_api_key else None
 
         self.erc20_contracts_dict = {t_name: self.web3.eth.contract(
