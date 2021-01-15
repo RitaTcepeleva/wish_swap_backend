@@ -11,7 +11,7 @@ from scanner.blockchain_common.wrapper_network import WrapperNetwork
 from scanner.blockchain_common.wrapper_output import WrapperOutput
 from scanner.blockchain_common.wrapper_transaction import WrapperTransaction
 from scanner.blockchain_common.wrapper_transaction_receipt import WrapperTransactionReceipt
-from wish_swap.settings_local import BLOCKCHAINS
+from wish_swap.settings_local import BLOCKCHAINS, ERC20_TOKENS
 
 
 class EthNetwork(WrapperNetwork):
@@ -22,8 +22,7 @@ class EthNetwork(WrapperNetwork):
         print(url)
         self.web3 = Web3(Web3.HTTPProvider(url))
         self.web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-        token = BLOCKCHAINS['Ethereum']['token']
-        tokens = [{token['symbol']: token['address']}]
+        tokens = ERC20_TOKENS
         etherscan_api_key = BLOCKCHAINS[type]['scanner']['etherscan_api_key']
         is_testnet = BLOCKCHAINS[type]['scanner']['is_testnet']
         self.etherscan = EtherScanAPI(etherscan_api_key, is_testnet) if etherscan_api_key else None

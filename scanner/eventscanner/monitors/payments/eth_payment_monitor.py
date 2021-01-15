@@ -1,7 +1,7 @@
 from scanner.eventscanner.queue.pika_handler import send_to_backend
 #from mywish_models.models import ExchangeRequests, session
 from scanner.scanner.events.block_event import BlockEvent
-from wish_swap.settings_local import BLOCKCHAINS_BY_NUMBER, BLOCKCHAINS
+from wish_swap.settings_local import BLOCKCHAINS_BY_NUMBER, BLOCKCHAINS, ERC20_TOKENS
 
 
 class EthPaymentMonitor:
@@ -9,8 +9,7 @@ class EthPaymentMonitor:
     network_types = ['Ethereum']
     event_type = 'payment'
     queue = 'Ethereum'
-    token = BLOCKCHAINS['Ethereum']['token']
-    tokens = [{token['symbol']: token['address']}]
+    tokens = ERC20_TOKENS
 
     @classmethod
     def on_new_block_event(cls, block_event: BlockEvent):
@@ -65,4 +64,4 @@ class BSPaymentMonitor(EthPaymentMonitor):
     event_type = 'payment'
     queue = 'Binance-Smart-Chain'
     token = BLOCKCHAINS['Binance-Smart-Chain']['token']
-    tokens = [{token['symbol']: token['address']}]
+    tokens = ERC20_TOKENS
