@@ -19,16 +19,15 @@ from binance_chain.constants import KlineInterval
 from binance_chain.environment import BinanceEnvironment
 from binance_chain.node_rpc.http import HttpRpcClient
 
-client = HttpApiClient(request_params={"verify": False, "timeout": 20})
+client = HttpApiClient(request_params={"verify": False, "timeout": 60})
 client = HttpApiClient()
 testnet_env = BinanceEnvironment.get_testnet_env()
-client = HttpApiClient(env=testnet_env)
+client = HttpApiClient(env=testnet_env, request_params={"verify": False, "timeout": 60})
 peers = client.get_node_peers()
 listen_addr = peers[0]['listen_addr']
 rpc_client = HttpRpcClient(listen_addr)
 processed = []
 commited = []
-
 
 class BinNetwork(WrapperNetwork):
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
