@@ -95,6 +95,6 @@ class BinNetwork(WrapperNetwork):
                     max_block = int(t['blockHeight'])
         block = WrapperBlock('', '', '', transactions)
 
-        with open(os.path.join(self.base_dir, 'BINANCE_MAINNET'), 'w') as file:
+        with open(os.path.join(self.base_dir, self.type), 'w') as file:
             file.write(str(max_block))
         return block
