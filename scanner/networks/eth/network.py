@@ -11,26 +11,27 @@ from scanner.blockchain_common.wrapper_network import WrapperNetwork
 from scanner.blockchain_common.wrapper_output import WrapperOutput
 from scanner.blockchain_common.wrapper_transaction import WrapperTransaction
 from scanner.blockchain_common.wrapper_transaction_receipt import WrapperTransactionReceipt
-from wish_swap.settings_local import NETWORKS, ERC20_TOKENS
+from wish_swap.settings_local import BLOCKCHAINS
 
 
 class EthNetwork(WrapperNetwork):
 
     def __init__(self, type):
         super().__init__(type)
-        url = NETWORKS[type]['url']
+        url = BLOCKCHAINS[type]['node']
         print(url)
         self.web3 = Web3(Web3.HTTPProvider(url))
         self.web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-
-        etherscan_api_key = NETWORKS[type].get('etherscan_api_key')
-        is_testnet = NETWORKS[type].get('is_testnet')
+        token = BLOCKCHAINS['Ethereum']['token']
+        tokens = [{token['symbol']: token['address']}]
+        etherscan_api_key = BLOCKCHAINS[type]['scanner']['etherscan_api_key']
+        is_testnet = BLOCKCHAINS[type]['scanner']['is_testnet']
         self.etherscan = EtherScanAPI(etherscan_api_key, is_testnet) if etherscan_api_key else None
 
         self.erc20_contracts_dict = {t_name: self.web3.eth.contract(
             self.web3.toChecksumAddress(t_address),
             abi=erc20_abi
-        ) for t_name, t_address in ERC20_TOKENS.items()}
+        ) for t_name, t_address in tokens.items()}
 
     def get_last_block(self):
         return self.web3.eth.blockNumber

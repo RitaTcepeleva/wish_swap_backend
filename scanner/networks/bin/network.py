@@ -11,7 +11,7 @@ from scanner.blockchain_common.wrapper_network import WrapperNetwork
 from scanner.blockchain_common.wrapper_output import WrapperOutput
 from scanner.blockchain_common.wrapper_transaction import WrapperTransaction
 from scanner.blockchain_common.wrapper_transaction_receipt import WrapperTransactionReceipt
-from wish_swap.settings_local import NETWORKS, ERC20_TOKENS, BLOCKCHAINS
+from wish_swap.settings_local import BLOCKCHAINS
 
 from binance_chain.http import HttpApiClient
 from binance_chain.http import PeerType
@@ -37,8 +37,6 @@ class BinNetwork(WrapperNetwork):
 
     def __init__(self, type):
         super().__init__(type)
-        url = NETWORKS[type]['url']
-        is_testnet = NETWORKS[type].get('is_testnet')
 
     def get_last_block(self):
         pass

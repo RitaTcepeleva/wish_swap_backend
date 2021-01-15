@@ -1,12 +1,12 @@
 from scanner.eventscanner.queue.pika_handler import send_to_backend
 from scanner.scanner.events.block_event import BlockEvent
-from wish_swap.settings_local import NETWORKS, BLOCKCHAINS_BY_NUMBER, BLOCKCHAINS
+from wish_swap.settings_local import BLOCKCHAINS_BY_NUMBER, BLOCKCHAINS
 
 
 class BinPaymentMonitor:
-    network_types = ['BINANCE_MAINNET']
+    network_types = ['Binance-Chain']
     event_type = 'payment'
-    queue = NETWORKS[network_types[0]]['queue']
+    queue = 'Binance-Chain'
     allowed = BLOCKCHAINS['Binance-Chain']['token']['address']
     assets = BLOCKCHAINS['Binance-Chain']['token']['symbol']
 
