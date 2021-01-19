@@ -23,7 +23,7 @@ class EthPaymentMonitor:
         tokens = session.query(Token).filter(cls.network(Token).in_(cls.network_types)).all()
         for token in tokens:
             id = [token.swap_contract_id]
-            swap_contract = session.query(SwapContract).get(getattr(SwapContract, 'id').in_(id)).all()
+            swap_contract = session.query(SwapContract).filter(getattr(SwapContract, 'id').in_(id)).first()
             swap_address = swap_contract.address.lower()
             if swap_address in addresses:
                 transactions = block_event.transactions_by_address[swap_address]
