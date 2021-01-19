@@ -33,7 +33,7 @@ class EthPaymentMonitor:
     @classmethod
     def handle(cls, token, swap_address, transactions, network):
         for tx in transactions:
-            if swap_addresslower() != tx.outputs[0].address.lower():
+            if swap_address.lower() != tx.outputs[0].address.lower():
                 continue
 
             processed_receipt = network.get_processed_tx_receipt(tx.tx_hash, token.symbol, swap_address)
