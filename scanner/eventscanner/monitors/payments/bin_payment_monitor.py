@@ -1,7 +1,6 @@
 from scanner.eventscanner.queue.pika_handler import send_to_backend
 from scanner.mywish_models.models import Dex, Token, SwapAddress, session
 from scanner.scanner.events.block_event import BlockEvent
-from wish_swap.settings_local import BLOCKCHAINS_BY_NUMBER, NETWORKS
 
 
 class BinPaymentMonitor:
