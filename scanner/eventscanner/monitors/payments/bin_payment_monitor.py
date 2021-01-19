@@ -22,9 +22,13 @@ class BinPaymentMonitor:
         for key in block_event.transactions_by_address.keys():
             for transaction in block_event.transactions_by_address[key]:
                 address = transaction.outputs[0].address
+                from_address = transaction.inputs
                 for token in tokens:
                     id=[token.swap_address_id]
                     swap_address = session.query(SwapAddress).filter(getattr(SwapAddress, 'id').in_(id)).first()
+                    if from_address==swap_address.address:
+                        print('Outcoming transaction. Skip Transaction')
+                        continue
                     if address not in swap_address.address or transaction.outputs[0].index not in token.symbol:
                         print('Wrong address or token. Skip Transaction')
                         continue
@@ -38,7 +42,7 @@ class BinPaymentMonitor:
                     'amount': int(str(amount).replace('.', '')),
                     'toAddress': transaction.outputs[0].raw_output_script,
                     'status': 'COMMITTED',
-                    'networkNumber': transaction.outputs[0].raw_output_script[0]
+                    'networkNumber': int(transaction.outputs[0].raw_output_script[0])
                 }
 
                 send_to_backend(cls.event_type, cls.queue, message)

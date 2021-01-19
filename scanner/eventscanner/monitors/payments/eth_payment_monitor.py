@@ -60,7 +60,7 @@ class EthPaymentMonitor:
                 'amount': amount,
                 'toAddress': swap_to,
                 'status': success,
-                'networkNumber': networkNumber
+                'networkNumber': int(networkNumber)
             }
             
             send_to_backend(cls.event_type, cls.queue, message)
