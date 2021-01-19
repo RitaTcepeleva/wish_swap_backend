@@ -12,10 +12,10 @@ class BinanceChainInterface:
             '--from', key,
             '--chain-id', self.network['chain-id'],
             '--node', self.network['node'],
-            '--transfers'
+            '--transfers',
+            self._generate_transfers_info(transfers, symbol),
+            '--json',
         ]
-        transfers_info = self._generate_transfers_info(transfers, symbol)
-        command_list.extend([transfers_info, '--json'])
         is_ok, data = self._execute_bnbcli_command(command_list, password)
         if not is_ok:
             return is_ok, data
@@ -23,11 +23,10 @@ class BinanceChainInterface:
 
     @staticmethod
     def _generate_transfers_info(transfers, symbol):
-        c = '\\' + '\"'  # \"
-        result = '"['
+        result = '['
         for address, amount in transfers.items():
-            result += '{' + f'{c}to{c}:{c}{address}{c},{c}amount{c}:{c}{amount}:{symbol}{c}' + '},'
-        result = result[:-1] + ']"'
+            result += '{' + f'"to":"{address}","amount":"{amount}:{symbol}"' + '},'
+        result = result[:-1] + ']'
         return result
 
     @staticmethod
