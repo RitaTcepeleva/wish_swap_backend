@@ -23,9 +23,10 @@ class BinanceChainInterface:
 
     @staticmethod
     def _generate_transfers_info(transfers, symbol):
+        c = '\\' + '\"'  # \"
         result = '"['
         for address, amount in transfers.items():
-            result += '{\"to\":\"' + address + '\",\"amount\":\"' + f'{amount}:{symbol}' + '\"},'
+            result += '{' + f'{c}to{c}:{c}{address}{c},{c}amount{c}:{c}{amount}:{symbol}{c}' + '},'
         result = result[:-1] + ']"'
         return result
 
