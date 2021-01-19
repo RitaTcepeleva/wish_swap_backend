@@ -13,7 +13,7 @@ class BinScanner(ScannerPolling):
     network_types=['Binance-Chain',]
 
     @classmethod
-    def network(cls, model)`:
+    def network(cls, model):
         s = 'network'
         return getattr(model, s)
 
