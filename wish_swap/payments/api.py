@@ -10,6 +10,7 @@ def parse_payment(message):
         to_network = NETWORKS_BY_NUMBER[network_number]
     except KeyError:
         print(f'parsing payment: Network associated with number {network_number} doesn`t exist!', flush=True)
+        return
 
     tx_hash = message['transactionHash']
     from_address = message['address']
