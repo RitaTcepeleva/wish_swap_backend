@@ -8,7 +8,7 @@ class BinanceChainInterface:
 
     def multi_send(self, key, password, symbol, transfers):
         command_list = [
-            self.network['cli'], 'multi-send',
+            self.network['cli'], 'token', 'multi-send',
             '--from', key,
             '--chain-id', self.network['chain-id'],
             '--node', self.network['node'],
