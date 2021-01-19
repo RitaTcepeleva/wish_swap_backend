@@ -22,7 +22,7 @@ class EthPaymentMonitor:
         addresses = block_event.transactions_by_address.keys()
         tokens = session.query(Token).filter(cls.network(Token).in_(cls.network_types)).all()
         for token in tokens:
-            swap_address = token.token_address.address.lower()
+            swap_address = token.swap_contract.address.lower()
             if swap_address in addresses:
                 transactions = block_event.transactions_by_address[swap_address]
                 cls.handle(token, transactions, block_event.network)
@@ -31,10 +31,10 @@ class EthPaymentMonitor:
     @classmethod
     def handle(cls, token, transactions, network):
         for tx in transactions:
-            if token.token_address.address.lower() != tx.outputs[0].address.lower():
+            if token.swap_contract.address.lower() != tx.outputs[0].address.lower():
                 continue
 
-            processed_receipt = network.get_processed_tx_receipt(tx.tx_hash, token.symbol, token.token_address.address)
+            processed_receipt = network.get_processed_tx_receipt(tx.tx_hash, token.symbol, token.swap_contract.address)
             if not processed_receipt:
                 print('{}: WARNING! Can`t handle tx {}, probably we dont support this event'.format(
                     cls.network_types[0], tx.tx_hash), flush=True)
