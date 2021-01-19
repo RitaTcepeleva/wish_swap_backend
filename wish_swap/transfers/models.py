@@ -2,7 +2,7 @@ from django.db import models
 from wish_swap.settings import NETWORKS, GAS_LIMIT
 from web3 import Web3, HTTPProvider
 from wish_swap.tokens.swap_contract_abi import SWAP_CONTRACT_ABI
-from wish_swap.transfers.bnbcli_api import Bnbcli
+from wish_swap.transfers.binance_chain_api import BinanceChainInterface
 
 
 class Transfer(models.Model):
@@ -37,11 +37,10 @@ class Transfer(models.Model):
         return tx_hex
 
     def _binance_transfer(self):
-
         key = self.token.swap_address.bnbcli_key
         password = self.token.swap_address.bnbcli_password
         transfers = {self.address: self.amount, self.fee_address: self.fee_amount}
-        return Bnbcli().multi_send(key, password, self.token.symbol, transfers)
+        return BinanceChainInterface().multi_send(key, password, self.token.symbol, transfers)
 
     def execute(self):
         if self.token.network in ('Ethereum', 'Binance-Smart-Chain'):
@@ -61,7 +60,3 @@ class Transfer(models.Model):
                 self.tx_error = data
                 self.status = 'FAIL'
             self.save()
-
-
-
-
