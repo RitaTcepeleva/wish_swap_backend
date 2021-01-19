@@ -16,7 +16,7 @@ class EthPaymentMonitor:
 
 
     @classmethod
-    def on_new_block_event(cls, block_event: git stasBlockEvent):
+    def on_new_block_event(cls, block_event: BlockEvent):
         if block_event.network.type not in cls.network_types:
             return
         addresses = block_event.transactions_by_address.keys()
