@@ -26,7 +26,7 @@ class BinPaymentMonitor:
                 for token in tokens:
                     id=[token.swap_address_id]
                     swap_address = session.query(SwapAddress).filter(getattr(SwapAddress, 'id').in_(id)).first()
-                    if from_address==swap_address.address:
+                    if from_address.lower()==swap_address.address.lower():
                         print('Outcoming transaction. Skip Transaction')
                         continue
                     if address not in swap_address.address or transaction.outputs[0].index not in token.symbol:
