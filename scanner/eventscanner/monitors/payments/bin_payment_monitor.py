@@ -1,7 +1,6 @@
 from scanner.eventscanner.queue.pika_handler import send_to_backend
 from scanner.mywish_models.models import Dex, Token, session
 from scanner.scanner.events.block_event import BlockEvent
-from wish_swap.settings_local import BLOCKCHAINS_BY_NUMBER, NETWORKS
 
 
 class BinPaymentMonitor:
@@ -36,7 +35,7 @@ class BinPaymentMonitor:
                     'amount': int(str(amount).replace('.', '')),
                     'toAddress': transaction.outputs[0].raw_output_script,
                     'status': 'COMMITTED',
-                    'networkNumnber': transaction.outputs[0].raw_output_script[0]
+                    'networkNumber': transaction.outputs[0].raw_output_script[0]
                 }
 
                 send_to_backend(cls.event_type, cls.queue, message)
