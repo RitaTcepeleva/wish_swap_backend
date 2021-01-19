@@ -47,7 +47,7 @@ class BinNetwork(WrapperNetwork):
             client_transactions = client.get_transactions(address=swap_address.address,
                               tx_asset=token.symbol, start_time=s_time, limit=1000)
         except:
-            time.sleep(2)
+            time.sleep(10)
             client_transactions = client.get_transactions(address=swap_address.address,
                                                           tx_asset=token.symbol, start_time=s_time, limit=1000)
         tx_count = client_transactions['total']
