@@ -1,5 +1,5 @@
 from scanner.eventscanner.queue.pika_handler import send_to_backend
-from scanner.mywish_models.models import Dex, Token, session
+from scanner.mywish_models.models import Dex, Token, SwapContract, session
 from scanner.scanner.events.block_event import BlockEvent
 
 
@@ -16,25 +16,27 @@ class EthPaymentMonitor:
 
 
     @classmethod
-    def on_new_block_event(cls, block_event: BlockEvent):
+    def on_new_block_event(cls, block_event: git stasBlockEvent):
         if block_event.network.type not in cls.network_types:
             return
         addresses = block_event.transactions_by_address.keys()
         tokens = session.query(Token).filter(cls.network(Token).in_(cls.network_types)).all()
         for token in tokens:
-            swap_address = token.swap_contract.address.lower()
+            id = [token.id]
+            swap_contract = session.query(SwapContract).get(getattr(SwapContract, 'id').in_(id)).all()
+            swap_address = swap_contract.address.lower()
             if swap_address in addresses:
                 transactions = block_event.transactions_by_address[swap_address]
-                cls.handle(token, transactions, block_event.network)
+                cls.handle(token, swap_address, transactions, block_event.network)
         
         
     @classmethod
-    def handle(cls, token, transactions, network):
+    def handle(cls, token, swap_address, transactions, network):
         for tx in transactions:
-            if token.swap_contract.address.lower() != tx.outputs[0].address.lower():
+            if swap_address.address.lower() != tx.outputs[0].address.lower():
                 continue
 
-            processed_receipt = network.get_processed_tx_receipt(tx.tx_hash, token.symbol, token.swap_contract.address)
+            processed_receipt = network.get_processed_tx_receipt(tx.tx_hash, token.symbol, swap_address.address)
             if not processed_receipt:
                 print('{}: WARNING! Can`t handle tx {}, probably we dont support this event'.format(
                     cls.network_types[0], tx.tx_hash), flush=True)

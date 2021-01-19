@@ -1,6 +1,7 @@
 from scanner.eventscanner.queue.pika_handler import send_to_backend
-from scanner.mywish_models.models import Dex, Token, session
+from scanner.mywish_models.models import Dex, Token, SwapAddress, session
 from scanner.scanner.events.block_event import BlockEvent
+from wish_swap.settings_local import BLOCKCHAINS_BY_NUMBER, NETWORKS
 
 
 class BinPaymentMonitor:
@@ -13,6 +14,7 @@ class BinPaymentMonitor:
         s = 'network'
         return getattr(model, s)
 
+
     @classmethod
     def on_new_block_event(cls, block_event: BlockEvent):
         if block_event.network.type not in cls.network_types:
@@ -22,7 +24,9 @@ class BinPaymentMonitor:
             for transaction in block_event.transactions_by_address[key]:
                 address = transaction.outputs[0].address
                 for token in tokens:
-                    if address not in token.swap_address.address or transaction.outputs[0].index not in token.symbol:
+                    id=[token.id]
+                    swap_address = session.query(SwapAddress).get(getattr(SwapAddress, 'id').in_(id)).all()
+                    if address not in swap_address.address or transaction.outputs[0].index not in token.symbol:
                         print('Wrong address or token. Skip Transaction')
                         continue
 
