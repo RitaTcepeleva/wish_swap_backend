@@ -21,7 +21,7 @@ def parse_payment(message):
         payment = Payment(address=from_address, tx_hash=tx_hash, token=from_token, amount=amount)
         payment.save()
         print(f'parsing payment: Payment {payment.tx_hash} from {payment.address} '
-              f'for {amount / from_token.decimals} {from_token.symbol} successfully saved', flush=True)
+              f'for {amount / (10 ** from_token.decimals)} {from_token.symbol} successfully saved', flush=True)
 
         try:
             to_token = from_token.dex[to_network]
