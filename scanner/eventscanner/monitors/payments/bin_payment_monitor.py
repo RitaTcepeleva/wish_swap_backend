@@ -41,7 +41,7 @@ class BinPaymentMonitor:
                     'address': transaction.inputs,
                     'transactionHash': transaction.tx_hash,
                     'amount': int(str(amount).replace('.', '')),
-                    'toAddress': transaction.outputs[0].raw_output_script,
+                    'toAddress': transaction.outputs[0].raw_output_script[1:],
                     'status': 'COMMITTED',
                     'networkNumber': int(transaction.outputs[0].raw_output_script[0])
                 }
