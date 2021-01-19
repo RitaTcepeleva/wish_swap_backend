@@ -13,7 +13,7 @@ class BinScanner(ScannerPolling):
     network_types=['Binance-Chain',]
 
     @classmethod
-    def network(cls, model)`:
+    def network(cls, model):
         s = 'network'
         return getattr(model, s)
 
@@ -22,14 +22,14 @@ class BinScanner(ScannerPolling):
     def polling(cls):
         tokens = session.query(Token).filter(cls.network(Token).in_(cls.network_types)).all()
         for token in tokens:
-            id = [token.id]
-            swap_address = session.query(SwapAddress).get(getattr(SwapAddress, 'id').in_(id)).all()
+            id = [token.swap_address_id]
+            swap_address = session.query(SwapAddress).filter(getattr(SwapAddress, 'id').in_(id)).first()
             block=self.network.get_block(token, swap_address, int(time.time()*1000-604800000))
             self.process_block(block)
             time.sleep(2)
         while True:
             for token in tokens:
-                id = [token.id]
+                id = [token.swap_address_id]
                 swap_address = session.query(SwapAddress).get(getattr(SwapAddress, 'id').in_(id)).all()
                 block = self.network.get_block(token, swap_address, int(time.time() * 1000 - 604800000))
                 self.process_block(block)

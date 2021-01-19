@@ -23,8 +23,8 @@ class BinPaymentMonitor:
             for transaction in block_event.transactions_by_address[key]:
                 address = transaction.outputs[0].address
                 for token in tokens:
-                    id=[token.id]
-                    swap_address = session.query(SwapAddress).get(getattr(SwapAddress, 'id').in_(id)).all()
+                    id=[token.swap_address_id]
+                    swap_address = session.query(SwapAddress).filter(getattr(SwapAddress, 'id').in_(id)).first()
                     if address not in swap_address.address or transaction.outputs[0].index not in token.symbol:
                         print('Wrong address or token. Skip Transaction')
                         continue
