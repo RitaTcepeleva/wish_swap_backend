@@ -10,28 +10,23 @@ from scanner.mywish_models.models import Dex, Token, SwapAddress, session
 
 class BinScanner(ScannerPolling):
 
-    network_types=['Binance-Chain',]
-
-    @classmethod
-    def get_network(cls, model):
-        s = 'network'
-        return getattr(model, s)
 
 
-    @classmethod
-    def polling(cls):
-        tokens = session.query(Token).filter(cls.get_network(Token).in_(cls.network_types)).all()
+
+    def polling(self):
+        network_types = ['Binance-Chain', ]
+        tokens = session.query(Token).filter(getattr(Token, 'network').in_(network_types)).all()
         for token in tokens:
             id = [token.swap_address_id]
             swap_address = session.query(SwapAddress).filter(getattr(SwapAddress, 'id').in_(id)).first()
-            block=cls.network.get_block(token, swap_address, int(time.time()*1000-604800000))
+            block=self.network.get_block(token, swap_address, int(time.time()*1000-604800000))
             self.process_block(block)
             time.sleep(2)
         while True:
             for token in tokens:
                 id = [token.swap_address_id]
                 swap_address = session.query(SwapAddress).get(getattr(SwapAddress, 'id').in_(id)).all()
-                block = cls.network.get_block(token, swap_address, int(time.time() * 1000 - 604800000))
+                block = self.network.get_block(token, swap_address, int(time.time() * 1000 - 604800000))
                 self.process_block(block)
                 time.sleep(2)
             time.sleep(120)
