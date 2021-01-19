@@ -34,16 +34,16 @@ class BinPaymentMonitor:
                         print('Wrong address or token. Skip Transaction')
                         continue
 
-                amount = transaction.outputs[0].value
+                    amount = transaction.outputs[0].value
 
-                message = {
-                    'tokenId': token.id,
-                    'address': transaction.inputs,
-                    'transactionHash': transaction.tx_hash,
-                    'amount': int(str(amount).replace('.', '')),
-                    'toAddress': transaction.outputs[0].raw_output_script[1:],
-                    'status': 'COMMITTED',
-                    'networkNumber': int(transaction.outputs[0].raw_output_script[0])
-                }
+                    message = {
+                        'tokenId': token.id,
+                        'address': transaction.inputs,
+                        'transactionHash': transaction.tx_hash,
+                        'amount': int(str(amount).replace('.', '')),
+                        'toAddress': transaction.outputs[0].raw_output_script[1:],
+                        'status': 'COMMITTED',
+                        'networkNumber': int(transaction.outputs[0].raw_output_script[0])
+                    }
 
-                send_to_backend(cls.event_type, cls.queue, message)
+                    send_to_backend(cls.event_type, cls.queue, message)
