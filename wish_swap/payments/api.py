@@ -38,7 +38,7 @@ def parse_payment(message):
             address=to_address,
             amount=amount - fee_amount,
             fee_address=to_token.fee_address,
-            fee_amount=amount-fee_amount,
+            fee_amount=fee_amount,
         )
         transfer.save()
         transfer.execute()
@@ -48,7 +48,7 @@ def parse_payment(message):
             print(f'parsing payment: Transfer failed with error {transfer.tx_error}', flush=True)
         else:
             print(f'parsing payment: Successful transfer {transfer.tx_hash} to {transfer.address} '
-                  f'for {transfer.amount / transfer.token.decimals} {transfer.token.symbol}', flush=True)
+                  f'for {transfer.amount / (10 ** transfer.token.decimals)} {transfer.token.symbol}', flush=True)
 
     else:
         print(f'parsing payment: Tx {tx_hash} already registered', flush=True)
