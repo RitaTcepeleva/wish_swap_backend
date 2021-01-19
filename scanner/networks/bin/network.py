@@ -61,7 +61,7 @@ class BinNetwork(WrapperNetwork):
             if i > 100:
                 print('got out of the loop')
                 break
-        with open(os.path.join(self.base_dir, 'BINANCE_MAINNET'), 'r') as file:
+        with open(os.path.join(self.base_dir, 'Binance-Chain'), 'r') as file:
             max_block = file.read()
         if len(max_block) == 0:
             max_block = 0
