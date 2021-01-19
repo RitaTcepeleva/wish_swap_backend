@@ -8,8 +8,6 @@ class EthPaymentMonitor:
     network_types = ['Ethereum']
     event_type = 'payment'
     queue = 'Ethereum'
-    #tokens = ERC20_TOKENS
-
     
     @classmethod
     def network(cls, model):
@@ -70,4 +68,3 @@ class BSPaymentMonitor(EthPaymentMonitor):
     network_types = ['Binance-Smart-Chain']
     event_type = 'payment'
     queue = 'Binance-Smart-Chain'
-    #tokens = ERC20_TOKENS
