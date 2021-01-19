@@ -15,7 +15,7 @@ def parse_payment(message):
     from_address = message['address']
     to_address = message['toAddress']
     amount = message['amount']
-    from_token = Token.objects.get(message['tokenId'])
+    from_token = Token.objects.get(pk=message['tokenId'])
 
     if not Payment.objects.filter(tx_hash=tx_hash, token=from_token).count() > 0:
         payment = Payment(address=from_address, tx_hash=tx_hash, token=from_token, amount=amount)
