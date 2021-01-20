@@ -21,6 +21,7 @@ from rest_framework import permissions
 from wish_swap.rates.views import wish_fee_view
 from rest_framework.routers import DefaultRouter
 from wish_swap.gas_info.views import GasInfoViewSet
+from wish_swap.tokens.views import DexViewSet
 
 
 schema_view = get_schema_view(
@@ -36,6 +37,7 @@ schema_view = get_schema_view(
 
 router = DefaultRouter(trailing_slash=True)
 router.register('gas_info', GasInfoViewSet)
+router.register('dex', DexViewSet)
 
 
 urlpatterns = [
