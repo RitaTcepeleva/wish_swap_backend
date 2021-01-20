@@ -10,8 +10,8 @@ def push_transfers():
         network = transfer.token.network
         if network in ('Ethereum', 'Binance-Smart-Chain'):
             gas_info = GasInfo.objects.get(network=network)
-            gas_price = gas_info.price / (10 ** 9)
-            gas_price_limit = gas_info.price_limit / (10 ** 9)
+            gas_price = gas_info.price
+            gas_price_limit = gas_info.price_limit
             if gas_price > gas_price_limit:
                 print(f'PUSHING TRANSFERS: {transfer.token.symbol} abort pushing transfers due to high gas '
                       f'price in {network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)

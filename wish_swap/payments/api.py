@@ -45,8 +45,8 @@ def parse_payment(message):
 
         if to_network in ('Ethereum', 'Binance-Smart-Chain'):
             gas_info = GasInfo.objects.get(network=to_network)
-            gas_price = gas_info.price / (10 ** 9)
-            gas_price_limit = gas_info.price_limit / (10 ** 9)
+            gas_price = gas_info.price
+            gas_price_limit = gas_info.price_limit
             if gas_price > gas_price_limit:
                 transfer.status = 'HIGH GAS PRICE'
                 transfer.save()
