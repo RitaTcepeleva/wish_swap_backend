@@ -7,6 +7,7 @@ class TokenSerializer(serializers.ModelSerializer):
         model = Token
         fields = (
             'token_address',
+            'swap_address',
             'fee_address',
             'fee',
             'decimals',
@@ -17,8 +18,28 @@ class TokenSerializer(serializers.ModelSerializer):
 
 
 class DexSerializer(serializers.ModelSerializer):
-    tokens = serializers.RelatedField(many=True)
+    tokens = TokenSerializer(many=True)
 
     class Meta:
         model = Dex
-        fields = ('tokens',)
+        fields = ('name', 'tokens',)
+
+    def create(self, validated_data):
+        tokens_data = validated_data.pop('tokens')
+        dex = Dex.objects.create(**validated_data)
+        for token in tokens_data:
+            dex.tokens.create(**token)
+        return dex
+
+    def update(self, instance, validated_data):
+        tokens_data = validated_data.pop('tokens')
+        tokens = instance.tokens.all()
+        for token, token_data in zip(tokens, tokens_data):
+            for attr, value in token_data.items():
+                setattr(token, attr, value)
+            token.save()
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
