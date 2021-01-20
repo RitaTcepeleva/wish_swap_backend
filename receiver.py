@@ -62,10 +62,6 @@ class Receiver(threading.Thread):
         print('RECEIVER: Unknown message has been received', message, flush=True)
 
 
-for swap in SwapAddress.objects.all():
-    is_ok, data = BinanceChainInterface().add_key(swap.bnbcli_key, swap.bnbcli_password, swap.mnemonic)
-    print('BNBCLI: ', data, flush=True)
-
 for network in NETWORKS.keys():
     receiver = Receiver(network)
     receiver.start()
