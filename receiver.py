@@ -63,7 +63,7 @@ class Receiver(threading.Thread):
 
 
 for swap in SwapAddress.objects.all():
-    is_ok, data = BinanceChainInterface.add_key(swap.bnbcli_key, swap.bnbcli_password, swap.mnemonic)
+    is_ok, data = BinanceChainInterface().add_key(swap.bnbcli_key, swap.bnbcli_password, swap.mnemonic)
     print('BNBCLI: ', data, flush=True)
 
 for network in NETWORKS.keys():
