@@ -38,7 +38,7 @@ schema_view = get_schema_view(
 )
 
 router = DefaultRouter(trailing_slash=True)
-router.register('gas_info', GasInfoViewSet)
+router.register('gas', GasInfoViewSet)
 router.register('dex', DexViewSet)
 
 
@@ -46,7 +46,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),
     path('api/v1/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api/v1/calculate_wish_fee/', wish_fee_view),
+    # path('api/v1/calculate_wish_fee/', wish_fee_view),
     path('api/v1/fee/', fee_view),
     path('api/v1/transfer/<str:payment_hash>/', TransferView.as_view()),
 ]
