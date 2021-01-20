@@ -15,7 +15,7 @@ class SwapAddress(models.Model):
 
 
 class Token(models.Model):
-    dex = models.ForeignKey('tokens.Dex', on_delete=models.CASCADE)
+    dex = models.ForeignKey('tokens.Dex', on_delete=models.CASCADE, related_name='tokens')
     token_address = models.CharField(max_length=100)
     swap_address = models.OneToOneField('tokens.SwapAddress', on_delete=models.SET_NULL, null=True)
     swap_contract = models.OneToOneField('tokens.SwapContract', on_delete=models.SET_NULL, null=True)
