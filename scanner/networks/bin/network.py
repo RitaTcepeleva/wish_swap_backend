@@ -49,7 +49,7 @@ class BinNetwork(WrapperNetwork):
         except:
             print('Binance-Chain is falling down, falling down, falling down.... Binance-Chain is falling dowm, fuck this testnet')
             client_transactions={'total':0, 'tx':[]}
-            time.sleep(10)
+            time.sleep(2)
 
         tx_count = client_transactions['total']
         print(tx_count, flush=True)

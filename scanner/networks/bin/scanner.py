@@ -29,7 +29,7 @@ class BinScanner(ScannerPolling):
                 block = self.network.get_block(token, swap_address, int(time.time() * 1000 - 604800000))
                 self.process_block(block)
                 time.sleep(2)
-            time.sleep(120)
+            time.sleep(10)
         print('got out of the main loop')
 
     
