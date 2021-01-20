@@ -11,7 +11,7 @@ class SwapAddress(models.Model):
     bnbcli_key = models.CharField(max_length=100)
     bnbcli_password = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
-    mnemonic = models.CharField(max_length=100)
+    mnemonic = models.TextField(default='')
 
 
 class Token(models.Model):
