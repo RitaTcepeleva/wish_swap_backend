@@ -38,7 +38,7 @@ class Transfer(models.Model):
 
     def _binance_transfer(self):
         bnbcli = BinanceChainInterface()
-        bnbcli.add_key('key', 'password', self.token.secret.mnemonic)
+        bnbcli.add_key('key', 'password', self.token.secrets.mnemonic)
         transfers = {self.address: self.amount, self.fee_address: self.fee_amount}
         transfer_data = bnbcli.multi_send('key', 'password', self.token.symbol, transfers)
         bnbcli.delete_key('key', 'password')
