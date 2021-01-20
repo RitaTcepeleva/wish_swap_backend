@@ -44,7 +44,7 @@ class BinNetwork(WrapperNetwork):
         print('BINANCE_MAINNET: scanning', flush=True)
         try:
 
-            client_transactions = client.get_transactions(address=swap_address.address,
+            client_transactions = client.get_transactions(address=swap_address,
                               tx_asset=token.symbol, start_time=s_time, limit=1000)
         except:
             print('Binance-Chain is falling down, falling down, falling down.... Binance-Chain is falling dowm, fuck this testnet')
@@ -59,7 +59,7 @@ class BinNetwork(WrapperNetwork):
         while tx_count > len(client_transactions):
             offset += 1000
             client_transactions_append = client.get_transactions(
-                address=swap_address.address,
+                address=swap_address,
                               tx_asset=token.symbol, offset=offset, start_time=s_time, limit=1000)
             tx_count = client_transactions_append['total']
             client_transactions += client_transactions_append['tx']

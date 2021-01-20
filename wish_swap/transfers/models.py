@@ -23,7 +23,7 @@ class Transfer(models.Model):
         network = NETWORKS[self.token.network]
         w3 = Web3(HTTPProvider(network['node']))
         tx_params = {
-            'nonce': w3.eth.getTransactionCount(self.token.swap_contract.owner_address, 'pending'),
+            'nonce': w3.eth.getTransactionCount(self.token.secrets.address, 'pending'),
             'gasPrice': w3.eth.gasPrice,
             'gas': GAS_LIMIT,
         }
@@ -31,7 +31,7 @@ class Transfer(models.Model):
         checksum_address = Web3.toChecksumAddress(self.address)
         func = contract.functions.transferToUserWithFee(checksum_address, self.amount, self.fee_amount)
         initial_tx = func.buildTransaction(tx_params)
-        signed_tx = w3.eth.account.signTransaction(initial_tx, self.token.swap_contract.owner_private)
+        signed_tx = w3.eth.account.signTransaction(initial_tx, self.token.secrets.private)
         tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
         tx_hex = tx_hash.hex()
         return tx_hex

@@ -11,8 +11,7 @@ django.setup()
 
 from wish_swap.settings import NETWORKS
 from wish_swap.payments.api import parse_payment
-from wish_swap.tokens.models import SwapAddress
-from wish_swap.transfers.binance_chain_api import BinanceChainInterface
+
 
 
 class Receiver(threading.Thread):

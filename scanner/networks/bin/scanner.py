@@ -5,7 +5,7 @@ from scanner.blockchain_common.wrapper_block import WrapperBlock
 from scanner.eventscanner.queue.subscribers import pub
 from scanner.scanner.events.block_event import BlockEvent
 from scanner.scanner.services.scanner_polling import ScannerPolling
-from scanner.mywish_models.models import Dex, Token, SwapAddress, session
+from scanner.mywish_models.models import Dex, Token, session
 
 
 class BinScanner(ScannerPolling):
@@ -17,15 +17,13 @@ class BinScanner(ScannerPolling):
         network_types = ['Binance-Chain', ]
         tokens = session.query(Token).filter(getattr(Token, 'network').in_(network_types)).all()
         for token in tokens:
-            id = [token.swap_address_id]
-            swap_address = session.query(SwapAddress).filter(getattr(SwapAddress, 'id').in_(id)).first()
+            swap_address = token.swap_address
             block=self.network.get_block(token, swap_address, int(time.time()*1000-604800000))
             self.process_block(block)
             time.sleep(2)
         while True:
             for token in tokens:
-                id = [token.swap_address_id]
-                swap_address = session.query(SwapAddress).filter(getattr(SwapAddress, 'id').in_(id)).first()
+                swap_address = token.swap_address
                 block = self.network.get_block(token, swap_address, int(time.time() * 1000 - 604800000))
                 self.process_block(block)
                 time.sleep(2)

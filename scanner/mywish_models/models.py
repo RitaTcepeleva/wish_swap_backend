@@ -11,7 +11,5 @@ Base.prepare(engine, reflect=True)
 #CORRECT PATH TO MODELS
 Dex = Base.classes.tokens_dex
 Token = Base.classes.tokens_token
-SwapAddress=Base.classes.tokens_swapaddress
-SwapContract=Base.classes.tokens_swapcontract
 
 session = Session(engine)

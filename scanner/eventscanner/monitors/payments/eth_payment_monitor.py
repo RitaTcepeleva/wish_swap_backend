@@ -1,5 +1,5 @@
 from scanner.eventscanner.queue.pika_handler import send_to_backend
-from scanner.mywish_models.models import Dex, Token, SwapContract, session
+from scanner.mywish_models.models import Dex, Token, session
 from scanner.scanner.events.block_event import BlockEvent
 
 
@@ -22,9 +22,7 @@ class EthPaymentMonitor:
         addresses = block_event.transactions_by_address.keys()
         tokens = session.query(Token).filter(cls.network(Token).in_(cls.network_types)).all()
         for token in tokens:
-            id = [token.swap_contract_id]
-            swap_contract = session.query(SwapContract).filter(getattr(SwapContract, 'id').in_(id)).first()
-            swap_address = swap_contract.address.lower()
+            swap_address = token.swap_address.lower()
             if swap_address in addresses:
                 transactions = block_event.transactions_by_address[swap_address]
                 cls.handle(token, swap_address, transactions, block_event.network)

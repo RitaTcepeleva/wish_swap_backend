@@ -1,5 +1,5 @@
 from scanner.eventscanner.queue.pika_handler import send_to_backend
-from scanner.mywish_models.models import Dex, Token, SwapAddress, session
+from scanner.mywish_models.models import Dex, Token, session
 from scanner.scanner.events.block_event import BlockEvent
 
 
@@ -24,13 +24,12 @@ class BinPaymentMonitor:
                 address = transaction.outputs[0].address
                 from_address = transaction.inputs
                 for token in tokens:
-                    id=[token.swap_address_id]
-                    swap_address = session.query(SwapAddress).filter(getattr(SwapAddress, 'id').in_(id)).first()
-                    print(from_address.lower(), swap_address.address.lower())
-                    if from_address.lower()==swap_address.address.lower():
+                    swap_address = token.swap_address
+                    print(from_address.lower(), swap_address.lower())
+                    if from_address.lower()==swap_address.lower():
                         print('Outcoming transaction. Skip Transaction')
                         continue
-                    if address not in swap_address.address or transaction.outputs[0].index not in token.symbol:
+                    if address not in swap_address or transaction.outputs[0].index not in token.symbol:
                         print('Wrong address or token. Skip Transaction')
                         continue
 
