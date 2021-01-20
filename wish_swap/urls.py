@@ -22,6 +22,7 @@ from wish_swap.rates.views import wish_fee_view
 from rest_framework.routers import DefaultRouter
 from wish_swap.gas_info.views import GasInfoViewSet
 from wish_swap.tokens.views import DexViewSet
+from wish_swap.gas_info.views import fee_view
 
 
 schema_view = get_schema_view(
@@ -44,5 +45,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),
     path('api/v1/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api/v1/calculate_wish_fee', wish_fee_view)
+    path('api/v1/calculate_wish_fee', wish_fee_view),
+    path('api/v1/fee', fee_view),
 ]
