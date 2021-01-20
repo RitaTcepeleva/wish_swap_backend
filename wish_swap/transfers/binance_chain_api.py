@@ -6,6 +6,13 @@ from wish_swap.settings import NETWORKS
 class BinanceChainInterface:
     network = NETWORKS['Binance-Chain']
 
+    def add_key(self, key, password, mnemonic):
+        command_list = [self.network['cli'], 'keys', 'add', key, '--recover']
+        is_ok, stdout, stderr = self._execute_command_line_command(command_list, [password, mnemonic])
+        if not is_ok:
+            return is_ok, stderr
+        return is_ok, stdout
+
     def multi_send(self, key, password, symbol, transfers):
         command_list = [
             self.network['cli'], 'token', 'multi-send',
@@ -16,10 +23,11 @@ class BinanceChainInterface:
             self._generate_transfers_info(transfers, symbol),
             '--json',
         ]
-        is_ok, data = self._execute_bnbcli_command(command_list, password)
+        is_ok, stdout, stderr = self._execute_command_line_command(command_list, [password])
         if not is_ok:
-            return is_ok, data
-        return is_ok, data['TxHash']
+            return is_ok, stderr
+        tx_hash = json.loads(stdout)['TxHash']
+        return is_ok, tx_hash
 
     @staticmethod
     def _generate_transfers_info(transfers, symbol):
@@ -30,12 +38,10 @@ class BinanceChainInterface:
         return result
 
     @staticmethod
-    def _execute_bnbcli_command(command_list, password):
+    def _execute_command_line_command(command_list, inputs):
         process = Popen(command_list, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate(input=(password + '\n').encode())
-        is_ok = process.returncode == 0
-        if is_ok:
-            return_data = json.loads(stdout.decode())
-        else:
-            return_data = stderr.decode()
-        return is_ok, return_data
+        for input in inputs:
+            process.stdin.write((input + '\n').encode())
+            process.stdin.flush()
+        stdout, stderr = process.communicate()
+        return process.returncode == 0, stdout.decode(), stderr.decode()

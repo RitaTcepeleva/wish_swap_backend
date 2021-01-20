@@ -11,6 +11,8 @@ django.setup()
 
 from wish_swap.settings import NETWORKS
 from wish_swap.payments.api import parse_payment
+from wish_swap.tokens.models import SwapAddress
+from wish_swap.transfers.binance_chain_api import BinanceChainInterface
 
 
 class Receiver(threading.Thread):
@@ -59,6 +61,10 @@ class Receiver(threading.Thread):
     def unknown_handler(self, message):
         print('RECEIVER: Unknown message has been received', message, flush=True)
 
+
+for swap in SwapAddress.objects.all():
+    is_ok, data = BinanceChainInterface.add_key(swap.bnbcli_key, swap.bnbcli_password, swap.mnemonic)
+    print('BNBCLI: ', data, flush=True)
 
 for network in NETWORKS.keys():
     receiver = Receiver(network)
