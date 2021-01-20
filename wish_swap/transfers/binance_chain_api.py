@@ -13,6 +13,13 @@ class BinanceChainInterface:
             return is_ok, stderr
         return is_ok, stdout
 
+    def delete_key(self, key, password):
+        command_list = [self.network['cli'], 'keys', 'delete', key]
+        is_ok, stdout, stderr = self._execute_command_line_command(command_list, [password])
+        if not is_ok:
+            return is_ok, stderr
+        return is_ok, stdout
+
     def multi_send(self, key, password, symbol, transfers):
         command_list = [
             self.network['cli'], 'token', 'multi-send',
