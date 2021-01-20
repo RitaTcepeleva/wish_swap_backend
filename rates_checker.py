@@ -17,8 +17,8 @@ if __name__ == '__main__':
         try:
             rate.update()
             rate.save()
-            print('rates checker: Rates updated', flush=True)
+            print('RATES CHECKER: rates updated', flush=True)
         except Exception as e:
-            print('rates checker exception:')
+            print('RATES CHECKER EXCEPTION: ')
             print('\n'.join(traceback.format_exception(*sys.exc_info())), flush=True)
         time.sleep(RATES_CHECKER_TIMEOUT)

@@ -36,16 +36,16 @@ class Receiver(threading.Thread):
             queue=self.network,
             on_message_callback=self.callback
         )
-        print(f'receiver: `{self.network}` queue was started', flush=True)
+        print(f'RECEIVER: `{self.network}` queue was started', flush=True)
         channel.start_consuming()
 
     def payment(self, message):
         message['fromNetwork'] = self.network
-        print('receiver: Payment message has been received', flush=True)
+        print('RECEIVER: payment message has been received', flush=True)
         parse_payment(message)
 
     def callback(self, ch, method, properties, body):
-        print('receiver: received', method, properties, body, flush=True)
+        print('RECEIVER: received', method, properties, body, flush=True)
         try:
             message = json.loads(body.decode())
             if message.get('status', '') == 'COMMITTED':
@@ -57,7 +57,7 @@ class Receiver(threading.Thread):
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def unknown_handler(self, message):
-        print('receiver: Unknown message has been received', message, flush=True)
+        print('RECEIVER: Unknown message has been received', message, flush=True)
 
 
 for network in NETWORKS.keys():
