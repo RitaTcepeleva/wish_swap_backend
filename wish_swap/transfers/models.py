@@ -37,10 +37,12 @@ class Transfer(models.Model):
         return tx_hex
 
     def _binance_transfer(self):
-        key = self.token.swap_address.bnbcli_key
-        password = self.token.swap_address.bnbcli_password
+        bnbcli = BinanceChainInterface()
+        bnbcli.add_key('key', 'password', self.token.secret.mnemonic)
         transfers = {self.address: self.amount, self.fee_address: self.fee_amount}
-        return BinanceChainInterface().multi_send(key, password, self.token.symbol, transfers)
+        transfer_data = bnbcli.multi_send('key', 'password', self.token.symbol, transfers)
+        bnbcli.delete_key('key', 'password')
+        return transfer_data
 
     def execute(self):
         if self.token.network in ('Ethereum', 'Binance-Smart-Chain'):
