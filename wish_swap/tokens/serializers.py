@@ -39,6 +39,9 @@ class DexSerializer(serializers.ModelSerializer):
                 setattr(token, attr, value)
             token.save()
 
+        for token in tokens_data[len(tokens):]:
+            instance.tokens.create(**token)
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
