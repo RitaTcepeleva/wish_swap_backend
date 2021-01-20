@@ -27,7 +27,7 @@ class Transfer(models.Model):
             'gasPrice': w3.eth.gasPrice,
             'gas': GAS_LIMIT,
         }
-        contract = w3.eth.contract(address=self.token.swap_contract.address, abi=SWAP_CONTRACT_ABI)
+        contract = w3.eth.contract(address=self.token.swap_address, abi=SWAP_CONTRACT_ABI)
         checksum_address = Web3.toChecksumAddress(self.address)
         func = contract.functions.transferToUserWithFee(checksum_address, self.amount, self.fee_amount)
         initial_tx = func.buildTransaction(tx_params)
