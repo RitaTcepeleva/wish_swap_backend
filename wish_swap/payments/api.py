@@ -5,12 +5,10 @@ from wish_swap.transfers.models import Transfer
 from web3 import Web3, HTTPProvider
 
 
-def check_gas_price(network_name):
-    if network_name not in ('Ethereum', 'Binance-Smart-Chain'):
-        return True
+def get_gas_price_and_limit(network_name):
     network = NETWORKS[network_name]
     w3 = Web3(HTTPProvider(network['node']))
-    return w3.eth.gasPrice <= network['gas_price_max']
+    return w3.eth.gasPrice / (10 ** 9), network['gas_price_max'] / (10 ** 9)
 
 
 def parse_payment(message):
@@ -51,12 +49,14 @@ def parse_payment(message):
         )
         transfer.save()
 
-        if not check_gas_price(to_network):
-            transfer.status = 'HIGH GAS PRICE'
-            transfer.save()
-            print(f'PARSING PAYMENT: {transfer.token.symbol} transfer will be executed later '
-                  f'due to high gas price in {to_network} network', flush=True)
-            return
+        if to_network in ('Ethereum', 'Binance-Smart-Chain'):
+            gas_price, gas_price_limit = get_gas_price_and_limit(to_network)
+            if gas_price > gas_price_limit:
+                transfer.status = 'HIGH GAS PRICE'
+                transfer.save()
+                print(f'PARSING PAYMENT: {transfer.token.symbol} transfer will be executed later due to high gas '
+                      f'price in {to_network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)
+                return
 
         transfer.execute()
         transfer.save()

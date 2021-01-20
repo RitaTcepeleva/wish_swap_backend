@@ -1,5 +1,5 @@
 from wish_swap.transfers.models import Transfer
-from wish_swap.payments.api import check_gas_price
+from wish_swap.payments.api import get_gas_price_and_limit
 from celery import shared_task
 
 
@@ -7,9 +7,13 @@ from celery import shared_task
 def push_transfers():
     transfers = Transfer.objects.filter(status='HIGH GAS PRICE')
     for transfer in transfers:
-        if not check_gas_price(transfer.token.network):
-            print('PUSHING TRANSFERS: aborting pushing due to high gas price', flush=True)
-            return
+        network = transfer.token.network
+        if network in ('Ethereum', 'Binance-Smart-Chain'):
+            gas_price, gas_price_limit = get_gas_price_and_limit(network)
+            if gas_price > gas_price_limit:
+                print(f'PUSHING TRANSFERS: {transfer.token.symbol} abort pushing transfers due to high gas '
+                      f'price in {network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)
+                return
 
         transfer.execute()
         transfer.save()
