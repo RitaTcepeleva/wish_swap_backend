@@ -1,14 +1,8 @@
 from wish_swap.payments.models import Payment
-from wish_swap.settings import NETWORKS_BY_NUMBER, NETWORKS
+from wish_swap.settings import NETWORKS_BY_NUMBER
 from wish_swap.tokens.models import Token
 from wish_swap.transfers.models import Transfer
-from web3 import Web3, HTTPProvider
-
-
-def get_gas_price_and_limit(network_name):
-    network = NETWORKS[network_name]
-    w3 = Web3(HTTPProvider(network['node']))
-    return w3.eth.gasPrice / (10 ** 9), network['gas_price_max'] / (10 ** 9)
+from wish_swap.gas_info.models import GasInfo
 
 
 def parse_payment(message):
@@ -50,12 +44,14 @@ def parse_payment(message):
         transfer.save()
 
         if to_network in ('Ethereum', 'Binance-Smart-Chain'):
-            gas_price, gas_price_limit = get_gas_price_and_limit(to_network)
+            gas_info = GasInfo.objects.get(network=to_network)
+            gas_price = gas_info.price / (10 ** 9)
+            gas_price_limit = gas_info.price_limit / (10 ** 9)
             if gas_price > gas_price_limit:
                 transfer.status = 'HIGH GAS PRICE'
                 transfer.save()
-                print(f'PARSING PAYMENT: {transfer.token.symbol} transfer will be executed later due to high gas '
-                      f'price in {to_network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)
+                print(f'PARSING PAYMENT: {transfer.token.symbol} transfer will be executed later due to '
+                      f'high gas price in {to_network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)
                 return
 
         transfer.execute()
