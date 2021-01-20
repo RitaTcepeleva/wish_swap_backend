@@ -21,4 +21,4 @@ class DexSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Dex
-        fields = ('tokens')
+        fields = ('tokens',)
