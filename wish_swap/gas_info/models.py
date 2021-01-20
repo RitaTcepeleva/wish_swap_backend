@@ -9,6 +9,6 @@ class GasInfo(models.Model):
 
     @property
     def price(self):
-        network = NETWORKS[self.name]
+        network = NETWORKS[self.network]
         w3 = Web3(HTTPProvider(network['node']))
         return w3.eth.gasPrice
