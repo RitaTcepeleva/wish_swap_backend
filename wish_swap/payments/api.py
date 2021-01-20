@@ -1,7 +1,16 @@
 from wish_swap.payments.models import Payment
-from wish_swap.settings import NETWORKS_BY_NUMBER
+from wish_swap.settings import NETWORKS_BY_NUMBER, NETWORKS
 from wish_swap.tokens.models import Token
 from wish_swap.transfers.models import Transfer
+from web3 import Web3, HTTPProvider
+
+
+def check_gas_price(network_name):
+    if network_name not in ('Ethereum', 'Binance-Smart-Chain'):
+        return True
+    network = NETWORKS[network_name]
+    w3 = Web3(HTTPProvider(network['node']))
+    return w3.eth.gasPrice <= network['gas_price_max']
 
 
 def parse_payment(message):
@@ -41,6 +50,14 @@ def parse_payment(message):
             fee_amount=fee_amount,
         )
         transfer.save()
+
+        if not check_gas_price(to_network):
+            transfer.status = 'HIGH GAS PRICE'
+            transfer.save()
+            print(f'PARSING PAYMENT: {transfer.token.symbol} transfer will be executed later '
+                  f'due to high gas price in {to_network} network', flush=True)
+            return
+
         transfer.execute()
         transfer.save()
 
