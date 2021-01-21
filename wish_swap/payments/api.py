@@ -33,6 +33,7 @@ def parse_payment(message):
 
         fee_amount = to_token.fee * (10 ** to_token.decimals)
 
+
         transfer = Transfer(
             payment=payment,
             token=to_token,
@@ -40,8 +41,15 @@ def parse_payment(message):
             amount=amount - fee_amount,
             fee_address=to_token.fee_address,
             fee_amount=fee_amount,
+
         )
         transfer.save()
+
+        if amount - fee_amount <= 0:
+            transfer.status = 'DECLINED'
+            transfer.save()
+            print(f'PARSING PAYMENT: abort transfer due to commission is more than transfer amount', flush=True)
+            return
 
         if to_network in ('Ethereum', 'Binance-Smart-Chain'):
             gas_info = GasInfo.objects.get(network=to_network)

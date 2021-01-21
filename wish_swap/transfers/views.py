@@ -21,7 +21,8 @@ payment_not_found_response = openapi.Response(
 class TransferView(APIView):
     @swagger_auto_schema(
         operation_description="Get transfer info by payment hash\n"
-                              "Transfer statuses: `SUCCESS`, `HIGH GAS PRICE` or `FAIL`",
+                              "Transfer statuses: `SUCCESS`, `HIGH GAS PRICE`, "
+                              "`FAIL` or `DECLINED` (of fee is more then token amount)",
         manual_parameters=[
             openapi.Parameter('payment_hash', openapi.IN_PATH, type=openapi.TYPE_STRING),
         ],
