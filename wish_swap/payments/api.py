@@ -33,7 +33,6 @@ def parse_payment(message):
 
         fee_amount = to_token.fee * (10 ** to_token.decimals)
 
-
         transfer = Transfer(
             payment=payment,
             token=to_token,
@@ -41,7 +40,7 @@ def parse_payment(message):
             amount=amount - fee_amount,
             fee_address=to_token.fee_address,
             fee_amount=fee_amount,
-
+            network=to_token.network,
         )
         transfer.save()
 

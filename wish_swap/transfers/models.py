@@ -18,6 +18,7 @@ class Transfer(models.Model):
     tx_hash = models.CharField(max_length=100)
     tx_error = models.TextField(default='')
     status = models.CharField(max_length=50, default='WAITING FOR TRANSFER')
+    network = models.CharField(max_length=100)
 
     def _swap_contract_transfer(self):
         network = NETWORKS[self.token.network]
