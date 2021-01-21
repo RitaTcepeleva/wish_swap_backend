@@ -10,6 +10,7 @@ from scanner.blockchain_common.wrapper_network import WrapperNetwork
 from scanner.blockchain_common.wrapper_output import WrapperOutput
 from scanner.blockchain_common.wrapper_transaction import WrapperTransaction
 from scanner.eventscanner.queue.pika_handler import send_to_backend
+from binance_chain.exceptions import BinanceChainAPIException
 
 from binance_chain.http import HttpApiClient
 from binance_chain.http import PeerType
@@ -105,10 +106,13 @@ class BinNetwork(WrapperNetwork):
 
 
     def confirm_transfer(self, transfer):
-        transaction = client.get_transaction(transfer.tx_hash)
-        print(f'transaction:{transaction}')
-        fake_transaction = client.get_transaction('C030D4006835468BB6C008D067E1FC46E07BF1913CC3FDABCC58C73063B2007E')
-        print(f'fake_transaction:{fake_transaction}')
+        try:
+            transaction = client.get_transaction(transfer.tx_hash)
+            print(f'transaction:{transaction}')
+            fake_transaction = client.get_transaction('C030D4006835468BB6C008D067E1FC46E07BF1913CC3FDABCC58C73063B2007E')
+            print(f'fake_transaction:{fake_transaction}')
+        except:
+            transaction['ok']=False
         if transaction['ok']:
             message = {
                 'transactionHash': transaction['hash'],
