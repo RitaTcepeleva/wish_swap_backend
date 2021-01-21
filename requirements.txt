@@ -15,11 +15,13 @@ coreapi==2.3.3
 coreschema==0.0.4
 cytoolz==0.11.0
 Django==3.1.5
+django-extensions==3.1.0
+django-searchable-encrypted-fields==0.1.9
 djangorestframework==3.12.2
 drf-yasg==1.20.0
 eth-abi==2.1.1
 eth-account==0.5.4
-eth-hash==0.2.0
+eth-hash==0.3.1
 eth-keyfile==0.5.1
 eth-keys==0.3.3
 eth-rlp==0.2.1
@@ -27,8 +29,6 @@ eth-typing==2.2.2
 eth-utils==1.9.5
 hexbytes==0.2.1
 idna==2.10
-importlib-metadata==3.4.0
-importlib-resources==5.1.0
 inflection==0.5.1
 ipfshttpclient==0.7.0a1
 itypes==1.2.0
@@ -42,10 +42,8 @@ netaddr==0.8.0
 packaging==20.8
 parsimonious==0.8.1
 pika==1.1.0
-prompt-toolkit==2.0.10
+prompt-toolkit==3.0.11
 protobuf==3.14.0
-psycopg2-binary==2.8.6
-ptpython==2.0.6
 pycryptodome==3.9.9
 pyparsing==2.4.7
 pyrsistent==0.17.3
@@ -57,7 +55,6 @@ ruamel.yaml.clib==0.2.2
 six==1.15.0
 sqlparse==0.4.1
 toolz==0.11.1
-typing-extensions==3.7.4.3
 uritemplate==3.0.1
 urllib3==1.26.2
 varint==1.0.2
@@ -65,4 +62,3 @@ vine==5.0.0
 wcwidth==0.2.5
 web3==5.15.0
 websockets==8.1
-zipp==3.4.0
