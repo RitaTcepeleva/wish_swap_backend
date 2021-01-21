@@ -5,7 +5,7 @@ from scanner.blockchain_common.wrapper_block import WrapperBlock
 from scanner.eventscanner.queue.subscribers import pub
 from scanner.scanner.events.block_event import BlockEvent
 from scanner.scanner.services.scanner_polling import ScannerPolling
-from scanner.mywish_models.models import Dex, Token, Transfers, session
+from scanner.mywish_models.models import Dex, Token, Transfer, session
 
 
 class BinScanner(ScannerPolling):
@@ -32,6 +32,7 @@ class BinScanner(ScannerPolling):
             transfers = session.query(Transfers).filter(getattr(Token, 'status').in_(status)).filter(getattr(Token, 'network').in_(networks)).all()
             for transfer in transfers:
                 confirm=self.network.confirm_transfer(token)
+                time.sleep(2)
         print('got out of the main loop')
 
     
