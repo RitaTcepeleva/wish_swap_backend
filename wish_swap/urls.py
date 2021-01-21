@@ -23,7 +23,7 @@ from rest_framework.routers import DefaultRouter
 from wish_swap.networks.views import GasInfoViewSet
 from wish_swap.tokens.views import DexViewSet
 from wish_swap.networks.views import fee_view
-from wish_swap.transfers.views import transfer_status_view
+from wish_swap.transfers.views import swap_status_view
 
 
 schema_view = get_schema_view(
@@ -48,5 +48,5 @@ urlpatterns = [
     path('api/v1/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     # path('api/v1/calculate_wish_fee/', wish_fee_view),
     path('api/v1/fee/', fee_view),
-    path('api/v1/transfer/<str:payment_hash>/', transfer_status_view),
+    path('api/v1/swap_status/<str:payment_hash>/', swap_status_view),
 ]

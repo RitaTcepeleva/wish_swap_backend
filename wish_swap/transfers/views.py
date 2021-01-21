@@ -40,19 +40,22 @@ transfer_status_response = openapi.Response(
     responses={200: transfer_status_response, 404: payment_not_found_response}
 )
 @api_view(http_method_names=['GET'])
-def transfer_status_view(request, payment_hash):
+def swap_status_view(request, payment_hash):
     try:
         payment = Payment.objects.get(tx_hash=payment_hash)
     except Payment.DoesNotExist:
         return Response({'detail': 'no such payment exists in db'}, 404)
 
+    if payment.validation_status != 'SUCCESS':
+        return Response({'status': 'FAIL'}, status=200)
+
     transfer = Transfer.objects.get(payment=payment)
     status = transfer.status
     if status in ('HIGH GAS PRICE', 'WAITING FOR CONFIRM'):
         return Response({'status': 'IN PROCESS'}, status=200)
-    elif status in ('SMALL AMOUNT', 'INVALID NETWORK'):
+    elif status == 'FAIL':
         return Response({'status': 'FAIL'}, status=200)
-    return Response({'status': status}, status=200)
+    return Response({'status': status, 'transfer_hash': transfer.tx_hash}, status=200)
 
 
 '''
