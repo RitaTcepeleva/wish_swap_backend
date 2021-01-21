@@ -44,5 +44,5 @@ class TransferMonitor:
 
 
 class BSCTransferMonitor(TransferMonitor):
-    network_type = ['Binance-Smart-Chain]
+    network_type = ['Binance-Smart-Chain']
     queue='Binance-Smart-Chain'
