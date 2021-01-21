@@ -5,14 +5,50 @@ from wish_swap.transfers.models import Transfer
 from wish_swap.networks.models import GasInfo
 
 
+def create_transfer_if_payment_valid(payment):
+    try:
+        to_network = NETWORKS_BY_NUMBER[payment.transfer_network_number]
+    except KeyError:
+        payment.validation_status = 'INVALID NETWORK NUMBER'
+        payment.save()
+        print('PARSING PAYMENT: network associated with number '
+              f'{payment.transfer_network_number} doesn`t exist!', flush=True)
+        return None
+
+    try:
+        to_token = payment.token.dex[to_network]
+    except Token.DoesNotExist:
+        payment.validation_status = 'INVALID NETWORK NUMBER'
+        payment.save()
+        print(f'PARSING PAYMENT: matching token doesn`t exist in {to_network} network!', flush=True)
+        return None
+
+    fee_amount = to_token.fee * (10 ** to_token.decimals)
+
+    if payment.amount - fee_amount <= 0:
+        payment.validation_status = 'SMALL AMOUNT'
+        payment.save()
+        print(f'PARSING PAYMENT: abort transfer due to commission is more than transfer amount', flush=True)
+        return None
+
+    payment.validation_status = 'SUCCESS'
+    payment.save()
+
+    transfer = Transfer(
+        payment=payment,
+        token=to_token,
+        address=payment.transfer_address,
+        amount=payment.amount - fee_amount,
+        fee_address=to_token.fee_address,
+        fee_amount=fee_amount,
+        network=to_token.network,
+    )
+    transfer.save()
+    return transfer
+
+
 def parse_payment(message):
     network_number = message['networkNumber']
-    try:
-        to_network = NETWORKS_BY_NUMBER[network_number]
-    except KeyError:
-        print(f'PARSING PAYMENT: network associated with number {network_number} doesn`t exist!', flush=True)
-        return
-
     tx_hash = message['transactionHash']
     from_address = message['address']
     to_address = message['toAddress']
@@ -20,35 +56,20 @@ def parse_payment(message):
     from_token = Token.objects.get(pk=message['tokenId'])
 
     if not Payment.objects.filter(tx_hash=tx_hash, token=from_token).count() > 0:
-        payment = Payment(address=from_address, tx_hash=tx_hash, token=from_token, amount=amount)
+        payment = Payment(
+            token=from_token,
+            address=from_address,
+            tx_hash=tx_hash,
+            amount=amount,
+            transfer_address=to_address,
+            transfer_network_number=network_number,
+        )
         payment.save()
         print(f'PARSING PAYMENT: payment {payment.tx_hash} from {payment.address} '
               f'for {amount / (10 ** from_token.decimals)} {from_token.symbol} successfully saved', flush=True)
 
-        try:
-            to_token = from_token.dex[to_network]
-        except Token.DoesNotExist:
-            print(f'PARSING PAYMENT: matching token doesn`t exist in {to_network} network!', flush=True)
-            return
-
-        fee_amount = to_token.fee * (10 ** to_token.decimals)
-
-        transfer = Transfer(
-            payment=payment,
-            token=to_token,
-            address=to_address,
-            amount=amount - fee_amount,
-            fee_address=to_token.fee_address,
-            fee_amount=fee_amount,
-            network=to_token.network,
-        )
-        transfer.save()
-
-        if amount - fee_amount <= 0:
-            transfer.status = 'SMALL AMOUNT'
-            transfer.save()
-            print(f'PARSING PAYMENT: abort transfer due to commission is more than transfer amount', flush=True)
-            return
+        transfer = create_transfer_if_payment_valid(payment)
+        to_network = transfer.network
 
         if to_network in ('Ethereum', 'Binance-Smart-Chain'):
             gas_info = GasInfo.objects.get(network=to_network)
