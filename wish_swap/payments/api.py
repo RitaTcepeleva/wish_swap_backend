@@ -2,7 +2,7 @@ from wish_swap.payments.models import Payment
 from wish_swap.settings import NETWORKS_BY_NUMBER
 from wish_swap.tokens.models import Token
 from wish_swap.transfers.models import Transfer
-from wish_swap.gas_info.models import GasInfo
+from wish_swap.networks.models import GasInfo
 
 
 def parse_payment(message):

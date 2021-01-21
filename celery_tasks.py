@@ -1,5 +1,5 @@
 from wish_swap.transfers.models import Transfer
-from wish_swap.gas_info.models import GasInfo
+from wish_swap.networks.models import GasInfo
 from celery import shared_task
 
 

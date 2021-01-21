@@ -20,9 +20,9 @@ from drf_yasg import openapi
 from rest_framework import permissions
 from wish_swap.rates.views import wish_fee_view
 from rest_framework.routers import DefaultRouter
-from wish_swap.gas_info.views import GasInfoViewSet
+from wish_swap.networks.views import GasInfoViewSet
 from wish_swap.tokens.views import DexViewSet
-from wish_swap.gas_info.views import fee_view
+from wish_swap.networks.views import fee_view
 from wish_swap.transfers.views import transfer_status_view
 
 

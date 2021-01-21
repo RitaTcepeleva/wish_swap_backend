@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'wish_swap.transfers',
     'wish_swap.rates',
     'wish_swap.tokens',
-    'wish_swap.gas_info',
+    'wish_swap.networks',
 ]
 
 MIDDLEWARE = [

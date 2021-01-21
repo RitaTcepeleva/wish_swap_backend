@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from wish_swap.gas_info.models import GasInfo
+from wish_swap.networks.models import GasInfo
 
 
 class GasInfoSerializer(serializers.ModelSerializer):
