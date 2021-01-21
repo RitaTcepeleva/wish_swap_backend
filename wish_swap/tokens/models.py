@@ -1,10 +1,5 @@
 from django.db import models
-
-
-class Secrets(models.Model):
-    address = models.CharField(max_length=100)
-    private = models.CharField(max_length=100)
-    mnemonic = models.TextField()
+from encrypted_fields import fields
 
 
 class Dex(models.Model):
@@ -16,9 +11,10 @@ class Dex(models.Model):
 
 class Token(models.Model):
     dex = models.ForeignKey('tokens.Dex', on_delete=models.CASCADE, related_name='tokens')
-    secrets = models.OneToOneField('tokens.Secrets', on_delete=models.SET_NULL, null=True)
     token_address = models.CharField(max_length=100)
     swap_address = models.CharField(max_length=100)
+    swap_owner = models.CharField(max_length=100, default='')
+    swap_secret = fields.EncryptedTextField(default='')  # private key for Ethereum-like, mnemonic for Binance-Chain
     fee_address = models.CharField(max_length=100)
     fee = models.IntegerField()
     decimals = models.IntegerField()

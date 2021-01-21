@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'django_extensions',
+    'encrypted_fields',
     'wish_swap.payments',
     'wish_swap.transfers',
     'wish_swap.rates',

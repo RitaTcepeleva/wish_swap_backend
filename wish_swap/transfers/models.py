@@ -24,7 +24,7 @@ class Transfer(models.Model):
         network = NETWORKS[self.token.network]
         w3 = Web3(HTTPProvider(network['node']))
         tx_params = {
-            'nonce': w3.eth.getTransactionCount(self.token.secrets.address, 'pending'),
+            'nonce': w3.eth.getTransactionCount(self.token.swap_owner, 'pending'),
             'gasPrice': w3.eth.gasPrice,
             'gas': GAS_LIMIT,
         }
@@ -32,14 +32,14 @@ class Transfer(models.Model):
         checksum_address = Web3.toChecksumAddress(self.address)
         func = contract.functions.transferToUserWithFee(checksum_address, self.amount, self.fee_amount)
         initial_tx = func.buildTransaction(tx_params)
-        signed_tx = w3.eth.account.signTransaction(initial_tx, self.token.secrets.private)
+        signed_tx = w3.eth.account.signTransaction(initial_tx, self.token.swap_secret)
         tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
         tx_hex = tx_hash.hex()
         return tx_hex
 
     def _binance_transfer(self):
         bnbcli = BinanceChainInterface()
-        bnbcli.add_key('key', 'password', self.token.secrets.mnemonic)
+        bnbcli.add_key('key', 'password', self.token.swap_secret)
         transfers = {self.address: self.amount, self.fee_address: self.fee_amount}
         transfer_data = bnbcli.multi_send('key', 'password', self.token.symbol, transfers)
         bnbcli.delete_key('key', 'password')
