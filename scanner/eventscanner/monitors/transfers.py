@@ -23,14 +23,16 @@ class TransferMonitor:
             .distinct(Transfer.tx_hash) \
             .all()
 
-        try:
-            tx_receipt = block_event.network.get_tx_receipt(transaction.tx_hash)
-            success=tx_receipt.success
-        except:
-            print('Error on getting tx_receipt, skip')
-            success=True
+
 
         for transfer in transfers:
+            try:
+                tx_receipt = block_event.network.get_tx_receipt(transaction.tx_hash)
+                success = tx_receipt.success
+            except:
+                print('Error on getting tx_receipt, skip')
+                success = True
+
             message = {
                 'transactionHash': transfer.tx_hash,
                 'transferId': transfer.id,
