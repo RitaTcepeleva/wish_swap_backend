@@ -11,5 +11,6 @@ Base.prepare(engine, reflect=True)
 #CORRECT PATH TO MODELS
 Dex = Base.classes.tokens_dex
 Token = Base.classes.tokens_token
+Transfer = Base.classes.transfers_transfer
 
 session = Session(engine)
