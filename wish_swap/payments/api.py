@@ -46,7 +46,7 @@ def parse_payment(message):
         transfer.save()
 
         if amount - fee_amount <= 0:
-            transfer.status = 'DECLINED'
+            transfer.status = 'SMALL AMOUNT'
             transfer.save()
             print(f'PARSING PAYMENT: abort transfer due to commission is more than transfer amount', flush=True)
             return

@@ -48,7 +48,7 @@ class Transfer(models.Model):
         if self.token.network in ('Ethereum', 'Binance-Smart-Chain'):
             try:
                 self.tx_hash = self._swap_contract_transfer()
-                self.status = 'SUCCESS'
+                self.status = 'WAITING FOR CONFIRM'
             except Exception as e:
                 self.tx_error = repr(e)
                 self.status = 'FAIL'
@@ -57,7 +57,7 @@ class Transfer(models.Model):
             is_ok, data = self._binance_transfer()
             if is_ok:
                 self.tx_hash = data
-                self.status = 'SUCCESS'
+                self.status = 'WAITING FOR CONFIRM'
             else:
                 self.tx_error = data
                 self.status = 'FAIL'
