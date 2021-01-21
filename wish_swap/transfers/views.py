@@ -48,7 +48,7 @@ def transfer_status_view(request, payment_hash):
 
     transfer = Transfer.objects.get(payment=payment)
     status = transfer.status
-    if status == ('HIGH GAS PRICE', 'WAITING FOR CONFIRM'):
+    if status in ('HIGH GAS PRICE', 'WAITING FOR CONFIRM'):
         return Response({'status': 'IN PROCESS'}, status=200)
     elif status in ('SMALL AMOUNT', 'INVALID NETWORK'):
         return Response({'status': 'FAIL'}, status=200)
