@@ -69,6 +69,9 @@ def parse_payment(message):
               f'for {amount / (10 ** from_token.decimals)} {from_token.symbol} successfully saved', flush=True)
 
         transfer = create_transfer_if_payment_valid(payment)
+        if not transfer:
+            return
+
         to_network = transfer.network
 
         if to_network in ('Ethereum', 'Binance-Smart-Chain'):
