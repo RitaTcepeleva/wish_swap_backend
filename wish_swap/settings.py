@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_yasg',
+    'django_extensions',
     'wish_swap.payments',
     'wish_swap.transfers',
     'wish_swap.rates',
