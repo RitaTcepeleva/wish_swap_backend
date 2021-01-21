@@ -35,7 +35,9 @@ class BinPaymentMonitor:
 
                     amount = transaction.outputs[0].value
                     output=transaction.outputs[0].raw_output_script.replace(' ', '')
-
+                    if len(output)==0:
+                        print('No memo field')
+                        continue
                     message = {
                         'tokenId': token.id,
                         'address': transaction.inputs,
