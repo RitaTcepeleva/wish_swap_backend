@@ -141,6 +141,8 @@ BLOCKCHAIN_DECIMALS = 10 ** 18
 
 TOKEN_DECIMALS = 10 ** 8
 
+SHELL_PLUS='ptpython'
+
 try:
     from wish_swap.settings_local import *
 except ImportError:
