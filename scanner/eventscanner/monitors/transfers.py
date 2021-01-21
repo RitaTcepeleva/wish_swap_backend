@@ -5,7 +5,7 @@ from scanner.scanner.events.block_event import BlockEvent
 class TransferMonitor:
     network_type=['Ethereum']
     queue='Ethereum'
-    event_type = 'transferred'
+    event_type = 'transfer'
 
     @classmethod
     def on_new_block_event(cls, block_event: BlockEvent):
@@ -40,7 +40,7 @@ class TransferMonitor:
                 'success': success,
                 'status': 'COMMITTED',
             }
-            send_to_backend(cls.event_type, queue, message)
+            send_to_backend(cls.event_type, cls.queue, message)
 
 
 class BSCTransferMonitor(TransferMonitor):
