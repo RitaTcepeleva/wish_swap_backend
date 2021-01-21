@@ -27,7 +27,7 @@ class TransferMonitor:
 
         for transfer in transfers:
             try:
-                tx_receipt = block_event.network.get_tx_receipt(transaction.tx_hash)
+                tx_receipt = block_event.network.get_tx_receipt(transfer.tx_hash)
                 success = tx_receipt.success
             except:
                 print('Error on getting tx_receipt, skip')
