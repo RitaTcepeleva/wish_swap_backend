@@ -5,7 +5,7 @@ from scanner.blockchain_common.wrapper_block import WrapperBlock
 from scanner.eventscanner.queue.subscribers import pub
 from scanner.scanner.events.block_event import BlockEvent
 from scanner.scanner.services.scanner_polling import ScannerPolling
-from scanner.mywish_models.models import Dex, Token, session
+from scanner.mywish_models.models import Dex, Token, Transfers, session
 
 
 class BinScanner(ScannerPolling):
@@ -15,6 +15,7 @@ class BinScanner(ScannerPolling):
 
     def polling(self):
         network_types = ['Binance-Chain', ]
+        status=['WAITING FOR CONFIRM']
         tokens = session.query(Token).filter(getattr(Token, 'network').in_(network_types)).all()
         for token in tokens:
             swap_address = token.swap_address
@@ -28,6 +29,9 @@ class BinScanner(ScannerPolling):
                 self.process_block(block)
                 time.sleep(2)
             time.sleep(10)
+            transfers = session.query(Transfers).filter(getattr(Token, 'status').in_(status)).filter(getattr(Token, 'network').in_(networks)).all()
+            for transfer in transfers:
+                confirm=self.network.confirm_transfer(token)
         print('got out of the main loop')
 
     

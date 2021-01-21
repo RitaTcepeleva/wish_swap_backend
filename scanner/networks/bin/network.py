@@ -5,13 +5,11 @@ import requests
 import json
 from hexbytes import HexBytes
 
-from scanner.blockchain_common.eth_tokens import erc20_abi
 from scanner.blockchain_common.wrapper_block import WrapperBlock
 from scanner.blockchain_common.wrapper_network import WrapperNetwork
 from scanner.blockchain_common.wrapper_output import WrapperOutput
 from scanner.blockchain_common.wrapper_transaction import WrapperTransaction
-from scanner.blockchain_common.wrapper_transaction_receipt import WrapperTransactionReceipt
-from wish_swap.settings_local import NETWORKS
+from scanner.eventscanner.queue.pika_handler import send_to_backend
 
 from binance_chain.http import HttpApiClient
 from binance_chain.http import PeerType
@@ -104,3 +102,8 @@ class BinNetwork(WrapperNetwork):
         with open(os.path.join(self.base_dir, self.type), 'w') as file:
             file.write(str(max_block))
         return block
+
+
+    def confirm_block(self, transfer):
+        transaction = client.get_transaction(token.tx_hash)
+        print(transaction)
