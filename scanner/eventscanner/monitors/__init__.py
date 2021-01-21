@@ -1,1 +1,1 @@
-from . import transfer
+from . import transfers
