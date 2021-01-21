@@ -117,7 +117,7 @@ class BinNetwork(WrapperNetwork):
                 'transactionHash': transaction['hash'],
                 'transferId': transfer.id,
                 'amount': int(transfer.amount),
-                'success': success,
+                'success': True,
                 'status': 'COMMITTED',
             }
             send_to_backend('transfer', 'Binance-Chain', message)
