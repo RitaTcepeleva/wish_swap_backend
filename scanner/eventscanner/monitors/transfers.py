@@ -19,7 +19,7 @@ class TransferMonitor:
 
         transfers = session \
             .query(Transfer) \
-            .filter(Transfer.tx_hash.in_(tx_hashes)\
+            .filter(Transfer.tx_hash.in_(tx_hashes))\
             .distinct(Transfer.tx_hash) \
             .all()
 
