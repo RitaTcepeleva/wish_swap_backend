@@ -106,4 +106,4 @@ class BinNetwork(WrapperNetwork):
 
     def confirm_block(self, transfer):
         transaction = client.get_transaction(transfer.tx_hash)
-        print(f'transaction:{transaction})
+        print(f'transaction:{transaction}')
