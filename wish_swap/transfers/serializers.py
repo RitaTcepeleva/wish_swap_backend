@@ -7,15 +7,18 @@ class TransferSerializer(serializers.ModelSerializer):
     payment_amount = serializers.SerializerMethodField('get_payment_amount')
     token_address = serializers.SerializerMethodField('get_token_address')
     network = serializers.SerializerMethodField('get_network')
+    token_symbol = serializers.SerializerMethodField('get_token_symbol')
 
     class Meta:
         model = Transfer
         fields = (
             'payment_hash',
+            'payment_amount'
             'address',
             'amount',
             'tx_hash',
             'token_address',
+            'token_symbol'
             'network',
             'status',
         )
@@ -31,3 +34,6 @@ class TransferSerializer(serializers.ModelSerializer):
 
     def get_network(self, transfer):
         return transfer.token.network
+
+    def get_token_symbol(self, transfer):
+        return transfer.token.symbol
