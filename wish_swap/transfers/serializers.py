@@ -13,12 +13,12 @@ class TransferSerializer(serializers.ModelSerializer):
         model = Transfer
         fields = (
             'payment_hash',
-            'payment_amount'
+            'payment_amount',
             'address',
             'amount',
             'tx_hash',
             'token_address',
-            'token_symbol'
+            'token_symbol',
             'network',
             'status',
         )
