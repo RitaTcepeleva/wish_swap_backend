@@ -7,9 +7,11 @@ class GasInfoSerializer(serializers.ModelSerializer):
         model = GasInfo
         extra_kwargs = {
             'price': {'read_only': True},
+            'status': {'read_only': True},
         }
         fields = (
             'network',
             'price',
             'price_limit',
+            'status'
         )

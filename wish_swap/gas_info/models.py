@@ -12,3 +12,10 @@ class GasInfo(models.Model):
         network = NETWORKS[self.network]
         w3 = Web3(HTTPProvider(network['node']))
         return int(w3.eth.gasPrice / (10 ** 9))
+
+    @property
+    def status(self):
+        if self.price <= self.price_limit:
+            return 'OK'
+        else:
+            return 'HIGH'
