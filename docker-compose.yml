@@ -57,11 +57,6 @@ services:
     env_file: .env
     build:
       context: .
-      args:
-        - BNBCLI_NAME=${BNBCLI_NAME}
-        - BNBCLI_KEY=${BNBCLI_KEY}
-        - BNBCLI_PASSWORD=${BNBCLI_PASSWORD}
-        - BINANCE_CHAIN_MNEMONIC=${BINANCE_CHAIN_MNEMONIC}
       dockerfile: dockerfiles/receiver.Dockerfile
     depends_on:
       - db

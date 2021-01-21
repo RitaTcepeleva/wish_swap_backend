@@ -22,10 +22,4 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-ARG BNBCLI_NAME
-ARG BNBCLI_KEY
-ARG BNBCLI_PASSWORD
-ARG BINANCE_CHAIN_MNEMONIC
-RUN { echo ${BNBCLI_PASSWORD}; echo ${BINANCE_CHAIN_MNEMONIC}; } | ${BNBCLI_NAME} keys add ${BNBCLI_KEY} --recover
-
 CMD ["python", "receiver.py"]
