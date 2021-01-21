@@ -111,8 +111,8 @@ class BinNetwork(WrapperNetwork):
             print(f'transaction:{transaction}')
             fake_transaction = client.get_transaction('C030D4006835468BB6C008D067E1FC46E07BF1913CC3FDABCC58C73063B2007E')
             print(f'fake_transaction:{fake_transaction}')
-        except:
-            transaction['ok']=False
+        except BinanceChainAPIException:
+            fake_transaction['ok']=False
         if transaction['ok']:
             message = {
                 'transactionHash': transaction['hash'],
