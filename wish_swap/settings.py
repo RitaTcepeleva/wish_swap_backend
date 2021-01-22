@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'django_extensions',
+    'corsheaders',
     'encrypted_fields',
     'wish_swap.payments',
     'wish_swap.transfers',
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -144,6 +146,8 @@ BLOCKCHAIN_DECIMALS = 10 ** 18
 TOKEN_DECIMALS = 10 ** 8
 
 SHELL_PLUS='ptpython'
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 try:
     from wish_swap.settings_local import *
