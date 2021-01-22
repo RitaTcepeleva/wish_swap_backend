@@ -20,12 +20,13 @@ payment_not_found_response = openapi.Response(
     )
 )
 
-transfer_status_response = openapi.Response(
-    description='Transfer status: `SUCCESS`, `IN PROCESSS`, `FAIL`',
+swap_status_response = openapi.Response(
+    description='Swap status: `SUCCESS`, `IN PROCESSS`, `FAIL` and transfer hash if `SUCCESS`',
     schema=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
             'status': openapi.Schema(type=openapi.TYPE_STRING),
+            'transfer_hash': openapi.Schema(type=openapi.TYPE_STRING),
         },
     )
 )
@@ -37,7 +38,7 @@ transfer_status_response = openapi.Response(
     manual_parameters=[
         openapi.Parameter('payment_hash', openapi.IN_PATH, type=openapi.TYPE_STRING),
     ],
-    responses={200: transfer_status_response, 404: payment_not_found_response}
+    responses={200: swap_status_response, 404: payment_not_found_response}
 )
 @api_view(http_method_names=['GET'])
 def swap_status_view(request, payment_hash):
