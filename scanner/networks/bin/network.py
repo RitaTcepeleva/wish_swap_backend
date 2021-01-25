@@ -80,9 +80,9 @@ class BinNetwork(WrapperNetwork):
             with open(os.path.join(self.base_dir, 'Binance-Chain', token.symbol), 'r') as file:
                 max_block = file.read()
         except FileNotFoundError:
-            max_block = 1
+            max_block = '1'
         if len(max_block) == 0:
-            max_block = 1
+            max_block = '1'
         max_block = int(max_block)
         new_transactions = []
         #get new transactions
