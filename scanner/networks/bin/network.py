@@ -18,6 +18,8 @@ from binance_chain.constants import KlineInterval
 from binance_chain.environment import BinanceEnvironment
 from binance_chain.node_rpc.http import HttpRpcClient
 
+
+#Setting Binance-Chain params, testnet_env for testnet
 client = HttpApiClient(request_params={"verify": False, "timeout": 60})
 client = HttpApiClient()
 testnet_env = BinanceEnvironment.get_testnet_env()
@@ -28,6 +30,7 @@ rpc_client = HttpRpcClient(listen_addr)
 processed = []
 commited = []
 
+
 class BinNetwork(WrapperNetwork):
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     sys.path.append(BASE_DIR)
@@ -36,16 +39,19 @@ class BinNetwork(WrapperNetwork):
     def __init__(self, type):
         super().__init__(type)
 
+    #No need to get last block number because we don't parse blocks in binance chain
     def get_last_block(self):
         pass
+
 
     def get_block(self, token, swap_address, s_time) -> WrapperBlock:
         print('BINANCE_MAINNET: scanning', flush=True)
         try:
-
+            #getting all transactions for last day
             client_transactions = client.get_transactions(address=swap_address,
                               tx_asset=token.symbol, start_time=s_time, limit=1000)
         except:
+            #mainly for testnet, because it simultaneously breaks with timeout error
             print('Binance-Chain is falling down, falling down, falling down.... Binance-Chain is falling dowm, fuck this testnet')
             client_transactions={'total':0, 'tx':[]}
             time.sleep(2)
@@ -55,6 +61,7 @@ class BinNetwork(WrapperNetwork):
         client_transactions = client_transactions['tx']
         offset = 0
         i = 0
+        #getting more than 1000(max in one request) transactions if needed
         while tx_count > len(client_transactions):
             offset += 1000
             client_transactions_append = client.get_transactions(
@@ -63,22 +70,30 @@ class BinNetwork(WrapperNetwork):
             tx_count = client_transactions_append['total']
             client_transactions += client_transactions_append['tx']
             time.sleep(1)
+            #emergency escape from "getting more transactions" loop
             i += 1
             if i > 100:
                 print('got out of the loop')
                 break
-        with open(os.path.join(self.base_dir, 'Binance-Chain'), 'r') as file:
-            max_block = file.read()
+        #getting block number of last checked transaction for each token
+        try:
+            with open(os.path.join(self.base_dir, 'Binance-Chain', token.symbol), 'r') as file:
+                max_block = file.read()
+        except FileNotFoundError:
+            max_block = 1
         if len(max_block) == 0:
-            max_block = 0
+            max_block = 1
         max_block = int(max_block)
         new_transactions = []
+        #get new transactions
         for c_t in client_transactions:
             if c_t['blockHeight'] <= max_block:
                 break
             new_transactions.append(c_t)
         transactions = []
+
         for t in new_transactions[::-1]:
+            # check tx success and type
             if t['code'] == 0 and t['txType'] == 'TRANSFER':
                 output = WrapperOutput(
                     t['txHash'],
@@ -95,16 +110,19 @@ class BinNetwork(WrapperNetwork):
                     ""
                 )
 
+                # set max_block to highest block in transaction list
                 transactions.append(transaction)
                 if int(t['blockHeight']) > max_block:
                     max_block = int(t['blockHeight'])
         block = WrapperBlock('', '', '', transactions)
 
-        with open(os.path.join(self.base_dir, self.type), 'w') as file:
+        #rewrite max block number
+        with open(os.path.join(self.base_dir, self.type, token.symbol), 'w') as file:
             file.write(str(max_block))
         return block
 
-
+    """transfer confirmation is currently here because binance chain transfer confirmation couln't work
+       normally with basic BlockEvent->pubsub->monitor logic"""
     def confirm_transfer(self, transfer):
         transaction={}
         try:

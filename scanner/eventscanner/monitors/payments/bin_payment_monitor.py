@@ -18,6 +18,7 @@ class BinPaymentMonitor:
     def on_new_block_event(cls, block_event: BlockEvent):
         if block_event.network.type not in cls.network_types:
             return
+        #get all token instances assigned to binance-chain network
         tokens = session.query(Token).filter(cls.network(Token).in_(cls.network_types)).all()
         for key in block_event.transactions_by_address.keys():
             for transaction in block_event.transactions_by_address[key]:
@@ -26,15 +27,19 @@ class BinPaymentMonitor:
                 for token in tokens:
                     swap_address = token.swap_address
                     print(from_address.lower(), swap_address.lower())
+                    #Check outcoming transactions
                     if from_address.lower()==swap_address.lower():
                         print('Outcoming transaction. Skip Transaction')
                         continue
+                    #Check if transaction doesn't belong to current token
                     if address not in swap_address or transaction.outputs[0].index not in token.symbol:
                         print('Wrong address or token. Skip Transaction')
                         continue
 
                     amount = transaction.outputs[0].value
+                    #delete spaces for backend
                     output=transaction.outputs[0].raw_output_script.replace(' ', '')
+                    #check memo field (required for bridge to work)
                     if len(output)==0:
                         print('No memo field')
                         continue
