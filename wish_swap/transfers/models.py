@@ -1,7 +1,6 @@
 from django.db import models
 from wish_swap.settings import NETWORKS, GAS_LIMIT
 from web3 import Web3, HTTPProvider
-from wish_swap.tokens.swap_contract_abi import SWAP_CONTRACT_ABI
 from wish_swap.transfers.binance_chain_api import BinanceChainInterface
 
 
@@ -28,7 +27,7 @@ class Transfer(models.Model):
             'gasPrice': w3.eth.gasPrice,
             'gas': GAS_LIMIT,
         }
-        contract = w3.eth.contract(address=self.token.swap_address, abi=SWAP_CONTRACT_ABI)
+        contract = w3.eth.contract(address=self.token.swap_address, abi=self.token.swap_abi)
         checksum_address = Web3.toChecksumAddress(self.address)
         func = contract.functions.transferToUserWithFee(checksum_address, self.amount, self.fee_amount)
         initial_tx = func.buildTransaction(tx_params)

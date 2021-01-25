@@ -14,6 +14,8 @@ class TokenSerializer(serializers.ModelSerializer):
             'symbol',
             'network',
             'is_original',
+            'token_abi',
+            'swap_abi',
         )
 
 
