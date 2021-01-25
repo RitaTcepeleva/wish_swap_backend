@@ -5,8 +5,6 @@ from hexbytes import HexBytes
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
-#from scanner.blockchain_common.eth_tokens import erc20_abi
-from wish_swap.tokens.swap_contract_abi import SWAP_CONTRACT_ABI
 from scanner.blockchain_common.wrapper_block import WrapperBlock
 from scanner.blockchain_common.wrapper_network import WrapperNetwork
 from scanner.blockchain_common.wrapper_output import WrapperOutput
