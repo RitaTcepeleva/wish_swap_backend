@@ -11,7 +11,10 @@ from scanner.mywish_models.models import Dex, Token, Transfer, session
 class BinScanner(ScannerPolling):
 
 
-
+    def poller(self):
+        print('hello from {}'.format(self.network.type), flush=True)
+        while True:
+            self.polling()
 
     def polling(self):
         network_types = ['Binance-Chain', ]
