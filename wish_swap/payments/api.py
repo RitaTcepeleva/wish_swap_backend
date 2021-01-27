@@ -138,7 +138,7 @@ def parse_payment_manually(tx_hash, network_name, dex_name):
         symbol = data['inputs'][0]['coins'][0]['denom']
         amount = data['inputs'][0]['coins'][0]['amount']
 
-        if from_address != token.swap_address:
+        if from_address == token.swap_address:
             # TODO: logging
             return
 
