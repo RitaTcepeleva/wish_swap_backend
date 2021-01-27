@@ -154,7 +154,7 @@ def parse_payment_manually(tx_hash, network_name, dex_name):
             'tokenId': token.id,
             'address': from_address,
             'transactionHash': tx_hash,
-            'amount': amount,
+            'amount': int(amount),
             'toAddress': memo[1:],
             'networkNumber': int(memo[0])
         }
