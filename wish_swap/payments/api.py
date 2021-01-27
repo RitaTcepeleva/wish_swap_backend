@@ -1,8 +1,12 @@
 from wish_swap.payments.models import Payment
 from wish_swap.settings import NETWORKS_BY_NUMBER
-from wish_swap.tokens.models import Token
+from wish_swap.tokens.models import Token, Dex
 from wish_swap.transfers.models import Transfer
 from wish_swap.networks.models import GasInfo
+from web3 import Web3, HTTPProvider
+from wish_swap.settings import NETWORKS
+import requests
+import json
 
 
 def create_transfer_if_payment_valid(payment):
@@ -99,3 +103,59 @@ def parse_payment(message):
 
     else:
         print(f'PARSING PAYMENT: tx {tx_hash} already registered', flush=True)
+
+
+def parse_payment_manually(tx_hash, network_name, dex_name):
+    dex = Dex.objects.get(name=dex_name)
+    token = dex[network_name]
+    if network_name in ('Ethereum', 'Binance-Smart-Chain'):
+        w3 = Web3(HTTPProvider(NETWORKS[token.network]['node']))
+        contract = w3.eth.contract(address=token.swap_address, abi=token.swap_abi)
+        tx_receipt = w3.eth.getTransactionReceipt(tx_hash)
+        receipt = contract.events.TransferToOtherBlockchain().processReceipt(tx_receipt)
+        if not receipt:
+            # TODO: logging
+            return
+
+        event = receipt[0].args
+        message = {
+            'tokenId': token.id,
+            'address': event.user,
+            'transactionHash': tx_hash,
+            'amount': event.amount,
+            'toAddress': event.newAddress,
+            'networkNumber': event.blockchain
+        }
+        parse_payment(message)
+    elif network_name == 'Binance-Chain':
+        url = f'{NETWORKS[network_name]["api-url"]}tx/{tx_hash}?format=json'
+        response = requests.get(url)
+        json_data = json.loads(response.text)
+        data = json_data['tx']['value']['msg'][0]['value']
+        memo = json_data['tx']['value']['memo'].replace(' ', '')
+        to_address = data['outputs'][0]['address']
+        from_address = data['inputs'][0]['address']
+        symbol = data['inputs'][0]['coins'][0]['denom']
+        amount = data['inputs'][0]['coins'][0]['amount']
+
+        if from_address != token.swap_address:
+            # TODO: logging
+            return
+
+        if to_address != token.swap_address:
+            # TODO: logging
+            return
+
+        if symbol != token.symbol:
+            # TODO: logging
+            return
+
+        message = {
+            'tokenId': token.id,
+            'address': from_address,
+            'transactionHash': tx_hash,
+            'amount': amount,
+            'toAddress': memo[1:],
+            'networkNumber': int(memo[0])
+        }
+        parse_payment(message)
