@@ -47,10 +47,15 @@ class Receiver(threading.Thread):
 
     def transfer(self, message):
         print('RECEIVER: transfer message has been received', flush=True)
+        transfer = Transfer.objects.get(pk=message['transferId'])
         if message['success']:
             transfer = Transfer.objects.get(pk=message['transferId'])
             transfer.status = 'SUCCESS'
-            transfer.save()
+            print('RECEIVER: transfer confirmed successfully', flush=True)
+        else:
+            transfer.status = 'FAIL'
+            print('RECEIVER: transfer was not completed, confirmation fail', flush=True)
+        transfer.save()
 
     def callback(self, ch, method, properties, body):
         print('RECEIVER: received', method, properties, body, flush=True)
