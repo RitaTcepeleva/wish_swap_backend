@@ -29,7 +29,7 @@ class Transfer(models.Model):
         }
         contract = w3.eth.contract(address=self.token.swap_address, abi=self.token.swap_abi)
         checksum_address = Web3.toChecksumAddress(self.address)
-        func = contract.functions.transferToUserWithFee(checksum_address, self.amount)
+        func = contract.functions.transferToUserWithFee(checksum_address, int(self.amount))
         initial_tx = func.buildTransaction(tx_params)
         signed_tx = w3.eth.account.signTransaction(initial_tx, self.token.swap_secret)
         tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
