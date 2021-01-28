@@ -42,15 +42,23 @@ class BinPaymentMonitor:
                     #check memo field (required for bridge to work)
                     if len(output)==0:
                         print('No memo field')
-                        continue
+                        toAddress=''
+                        networkNumber = -1
+                    elif output[0].isalpha():
+                        print('first symbol is alpha')
+                        networkNumber = -1
+                        toAddress = output
+                    else:
+                        networkNumber = int(output[0])
+                        toAddress = output[1:]
                     message = {
                         'tokenId': token.id,
                         'address': transaction.inputs,
                         'transactionHash': transaction.tx_hash,
                         'amount': int(str(amount).replace('.', '')),
-                        'toAddress': output[1:],
+                        'toAddress': toAddress,
                         'status': 'COMMITTED',
-                        'networkNumber': int(output[0])
+                        'networkNumber': networkNumber
                     }
 
                     send_to_backend(cls.event_type, cls.queue, message)
