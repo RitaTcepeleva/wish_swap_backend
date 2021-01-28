@@ -22,6 +22,11 @@ services:
     restart: unless-stopped
     volumes:
       - ./static:/app/static
+      - ./wish_swap/payments:/app/wish_swap/payments
+      - ./wish_swap/networks:/app/wish_swap/networks
+      - ./wish_swap/rates:/app/wish_swap/rates
+      - ./wish_swap/tokens:/app/wish_swap/tokens
+      - ./wish_swap/dex:/app/wish_swap/transfers
     networks:
       wish-swap-net:
   scanner:
