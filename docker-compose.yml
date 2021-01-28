@@ -26,7 +26,7 @@ services:
       - ./wish_swap/networks:/app/wish_swap/networks
       - ./wish_swap/rates:/app/wish_swap/rates
       - ./wish_swap/tokens:/app/wish_swap/tokens
-      - ./wish_swap/dex:/app/wish_swap/transfers
+      - ./wish_swap/transfers:/app/wish_swap/transfers
     networks:
       wish-swap-net:
   scanner:
