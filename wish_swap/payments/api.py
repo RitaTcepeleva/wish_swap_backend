@@ -70,7 +70,8 @@ def parse_payment(message):
         )
         payment.save()
         print(f'PARSING PAYMENT: payment {payment.tx_hash} from {payment.address} '
-              f'for {amount / (10 ** from_token.decimals)} {from_token.symbol} successfully saved', flush=True)
+              f'for {amount / (10 ** from_token.decimals)} {from_token.symbol} to {payment.transfer_address}'
+              f' in network {payment.transfer_network_number} successfully saved', flush=True)
 
         transfer = create_transfer_if_payment_valid(payment)
         if not transfer:
