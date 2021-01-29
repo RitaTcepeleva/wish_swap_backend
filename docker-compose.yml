@@ -48,16 +48,6 @@ services:
     restart: unless-stopped
     networks:
       wish-swap-net:
-  rates_checker:
-    env_file: .env
-    build:
-      context: .
-      dockerfile: dockerfiles/rates_checker.Dockerfile
-    depends_on:
-      - db
-    restart: unless-stopped
-    networks:
-     wish-swap-net:
   receiver:
     env_file: .env
     build:
