@@ -122,7 +122,8 @@ class BinNetwork(WrapperNetwork):
                 file.write(str(max_block))
             return block
         except FileNotFoundError:
-            filename = os.path.join(self.base_dir, self.type, token.symbol
+            print('except creation')
+            filename = os.path.join(self.base_dir, self.type)
             os.makedirs(filename, exist_ok=True)
             with open(os.path.join(self.base_dir, self.type, token.symbol), 'w') as file:
                 file.write(str(max_block))
