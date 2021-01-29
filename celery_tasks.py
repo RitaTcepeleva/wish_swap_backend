@@ -1,8 +1,5 @@
-import time
 from wish_swap.transfers.models import Transfer
-from wish_swap.networks.models import GasInfo
 from celery import shared_task
-from wish_swap.settings_local import PUSHING_TRANSFERS_TIMEOUT_SECS
 from wish_swap.transfers.api import send_transfer_to_queue
 
 
@@ -15,5 +12,4 @@ def push_transfers():
     print(f'PUSHING TRANSFERS: start pushing...', flush=True)
     for transfer in transfers:
         send_transfer_to_queue(transfer)
-        time.sleep(PUSHING_TRANSFERS_TIMEOUT_SECS)
     print(f'PUSHING TRANSFERS: pushing completed', flush=True)
