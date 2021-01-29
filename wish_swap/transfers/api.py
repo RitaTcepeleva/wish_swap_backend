@@ -50,17 +50,41 @@ def parse_execute_transfer_message(message):
                   f'high gas price in {network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)
             return
 
-    transfer.execute()
-    transfer.save()
+        transfer.execute()
+        transfer.save()
 
-    if transfer.status == 'FAIL':
-        print(f'TRANSFER EXECUTING: transfer failed with error {transfer.tx_error}', flush=True)
-    else:
-        decimals = (10 ** transfer.token.decimals)
-        symbol = transfer.token.symbol
-        print(f'TRANSFER EXECUTING: successful transfer {transfer.tx_hash} '
-              f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
-              f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
+        if transfer.status == 'FAIL':
+            print(f'TRANSFER EXECUTING: transfer failed with error {transfer.tx_error}', flush=True)
+        else:
+            decimals = (10 ** transfer.token.decimals)
+            symbol = transfer.token.symbol
+            print(f'TRANSFER EXECUTING: pending transfer {transfer.tx_hash} '
+                  f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
+                  f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
+
+            while transfer.status == 'PENDING':
+                transfer.update_status()
+                transfer.save()
+                print(f'TRANSFER EXECUTING: pending...', flush=True)
+                time.sleep(30)
+            if transfer.status == 'WAITING FOR CONFIRM':
+                print(f'TRANSFER EXECUTING: successful transfer {transfer.tx_hash} '
+                      f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
+                      f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
+            else:
+                print(f'TRANSFER EXECUTING: transfer failed after pending', flush=True)
+    elif network == 'Binance-Chain':
+        transfer.execute()
+        transfer.save()
+
+        if transfer.status == 'FAIL':
+            print(f'TRANSFER EXECUTING: transfer failed with error {transfer.tx_error}', flush=True)
+        else:
+            decimals = (10 ** transfer.token.decimals)
+            symbol = transfer.token.symbol
+            print(f'TRANSFER EXECUTING: successful transfer {transfer.tx_hash} '
+                  f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
+                  f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
 
     timeout = NETWORKS[network]['transfer_timeout']
     print(f'TRANSFER EXECUTING: waiting {timeout} seconds before next transfer', flush=True)

@@ -2,6 +2,7 @@ from django.db import models
 from wish_swap.settings import NETWORKS, GAS_LIMIT
 from web3 import Web3, HTTPProvider
 from wish_swap.transfers.binance_chain_api import BinanceChainInterface
+from web3.exceptions import TransactionNotFound
 
 
 class Transfer(models.Model):
@@ -45,11 +46,27 @@ class Transfer(models.Model):
         bnbcli.delete_key('key', 'password')
         return transfer_data
 
+    def update_status(self):
+        if self.status != 'PENDING' or self.token.network not in ('Ethereum', 'Binance-Smart-Chain'):
+            return
+
+        network = NETWORKS[self.token.network]
+        w3 = Web3(HTTPProvider(network['node']))
+        try:
+            receipt = w3.eth.getTransactionReceipt(self.tx_hash)
+            if receipt['status'] == 1:
+                self.status = 'WAITING FOR CONFIRM'
+            else:
+                self.status = 'PENDING'
+        except TransactionNotFound:
+            self.status = 'FAIL'
+        self.save()
+
     def execute(self):
         if self.token.network in ('Ethereum', 'Binance-Smart-Chain'):
             try:
                 self.tx_hash = self._swap_contract_transfer()
-                self.status = 'WAITING FOR CONFIRM'
+                self.status = 'PENDING'
             except Exception as e:
                 self.tx_error = repr(e)
                 self.status = 'FAIL'
