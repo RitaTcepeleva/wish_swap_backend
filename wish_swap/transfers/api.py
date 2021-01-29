@@ -24,7 +24,7 @@ def send_transfer_to_queue(transfer):
     channel.basic_publish(
         exchange='',
         routing_key=transfer.network + '-transfers',
-        body=json.dumps({'transferId': transfer.id}),
+        body=json.dumps({'transferId': transfer.id, 'status': 'COMMITTED'}),
         properties=pika.BasicProperties(type='execute_transfer'),
     )
     connection.close()
