@@ -3,6 +3,7 @@ from wish_swap.transfers.models import Transfer
 from wish_swap.networks.models import GasInfo
 from celery import shared_task
 from wish_swap.settings_local import PUSHING_TRANSFERS_TIMEOUT_SECS
+from wish_swap.transfers.api import send_transfer_to_queue
 
 
 @shared_task
@@ -23,17 +24,6 @@ def push_transfers():
                       f'price in {network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)
                 return
 
-        transfer.execute()
-        transfer.save()
-
-        if transfer.status == 'FAIL':
-            print(f'PUSHING TRANSFERS: transfer failed with error {transfer.tx_error}', flush=True)
-        else:
-            decimals = (10 ** transfer.token.decimals)
-            symbol = transfer.token.symbol
-            print(f'PUSHING TRANSFERS: successful transfer {transfer.tx_hash} '
-                  f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
-                  f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
-
+        send_transfer_to_queue(transfer)
         time.sleep(PUSHING_TRANSFERS_TIMEOUT_SECS)
     print(f'PUSHING TRANSFERS: pushing completed', flush=True)

@@ -12,6 +12,7 @@ django.setup()
 from wish_swap.settings import NETWORKS
 from wish_swap.payments.api import parse_payment
 from wish_swap.transfers.models import Transfer
+from wish_swap.transfers.api import parse_execute_transfer_message
 
 
 class Receiver(threading.Thread):
@@ -57,6 +58,11 @@ class Receiver(threading.Thread):
             print('RECEIVER: transfer was not completed, confirmation fail', flush=True)
         transfer.save()
 
+    def execute_transfer(self, message):
+        print('RECEIVER: execute transfer message has been received', flush=True)
+        parse_execute_transfer_message(message)
+
+
     def callback(self, ch, method, properties, body):
         print('RECEIVER: received', method, properties, body, flush=True)
         try:
@@ -75,4 +81,6 @@ class Receiver(threading.Thread):
 
 for network in NETWORKS.keys():
     receiver = Receiver(network)
+    receiver.start()
+    receiver = Receiver(network + '-transfers')
     receiver.start()

@@ -7,6 +7,7 @@ from web3 import Web3, HTTPProvider
 from wish_swap.settings import NETWORKS
 import requests
 import json
+from wish_swap.transfers.api import send_transfer_to_queue
 
 
 def create_transfer_if_payment_valid(payment):
@@ -90,17 +91,7 @@ def parse_payment(message):
                       f'high gas price in {to_network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)
                 return
 
-        transfer.execute()
-        transfer.save()
-
-        if transfer.status == 'FAIL':
-            print(f'PARSING PAYMENT: transfer failed with error {transfer.tx_error}', flush=True)
-        else:
-            decimals = (10 ** transfer.token.decimals)
-            symbol = transfer.token.symbol
-            print(f'PARSING PAYMENT: successful transfer {transfer.tx_hash} '
-                  f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
-                  f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
+        send_transfer_to_queue(transfer)
 
     else:
         print(f'PARSING PAYMENT: tx {tx_hash} already registered', flush=True)
