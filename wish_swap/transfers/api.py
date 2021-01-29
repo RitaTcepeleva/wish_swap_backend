@@ -2,6 +2,7 @@ import pika
 import os
 import json
 from wish_swap.transfers.models import Transfer
+from wish_swap.networks.models import GasInfo
 from wish_swap.settings import NETWORKS
 import time
 
@@ -36,6 +37,19 @@ def parse_execute_transfer_message(message):
         print(f'TRANSFER EXECUTING: there was already a transfer attempt', flush=True)
         return
 
+    network = transfer.network
+
+    if network in ('Ethereum', 'Binance-Smart-Chain'):
+        gas_info = GasInfo.objects.get(network=network)
+        gas_price = gas_info.price
+        gas_price_limit = gas_info.price_limit
+        if gas_price > gas_price_limit:
+            transfer.status = 'HIGH GAS PRICE'
+            transfer.save()
+            print(f'TRANSFER EXECUTING: {transfer.token.symbol} transfer will be executed later due to '
+                  f'high gas price in {network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)
+            return
+
     transfer.execute()
     transfer.save()
 
@@ -48,6 +62,6 @@ def parse_execute_transfer_message(message):
               f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
               f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
 
-    timeout = NETWORKS[transfer.network]['transfer_timeout']
+    timeout = NETWORKS[network]['transfer_timeout']
     print(f'TRANSFER EXECUTING: waiting {timeout} seconds before next transfer', flush=True)
-    time.sleep(NETWORKS[transfer.network]['transfer_timeout'])
+    time.sleep(timeout)

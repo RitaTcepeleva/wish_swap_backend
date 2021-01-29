@@ -75,24 +75,8 @@ def parse_payment(message):
               f' in network {payment.transfer_network_number} successfully saved', flush=True)
 
         transfer = create_transfer_if_payment_valid(payment)
-        if not transfer:
-            return
-
-        to_network = transfer.network
-
-        if to_network in ('Ethereum', 'Binance-Smart-Chain'):
-            gas_info = GasInfo.objects.get(network=to_network)
-            gas_price = gas_info.price
-            gas_price_limit = gas_info.price_limit
-            if gas_price > gas_price_limit:
-                transfer.status = 'HIGH GAS PRICE'
-                transfer.save()
-                print(f'PARSING PAYMENT: {transfer.token.symbol} transfer will be executed later due to '
-                      f'high gas price in {to_network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)
-                return
-
-        send_transfer_to_queue(transfer)
-
+        if transfer:
+            send_transfer_to_queue(transfer)
     else:
         print(f'PARSING PAYMENT: tx {tx_hash} already registered', flush=True)
 
