@@ -59,7 +59,7 @@ class Transfer(models.Model):
             else:
                 self.status = 'PENDING'
         except TransactionNotFound:
-            self.status = 'FAIL'
+            self.status = 'PENDING'
         self.save()
 
     def execute(self):

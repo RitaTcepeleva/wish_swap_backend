@@ -63,10 +63,11 @@ def parse_execute_transfer_message(message):
                   f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
 
             while transfer.status == 'PENDING':
+                print(f'TRANSFER EXECUTING: pending...', flush=True)
+                time.sleep(10)
                 transfer.update_status()
                 transfer.save()
-                print(f'TRANSFER EXECUTING: pending...', flush=True)
-                time.sleep(30)
+
             if transfer.status == 'WAITING FOR CONFIRM':
                 print(f'TRANSFER EXECUTING: successful transfer {transfer.tx_hash} '
                       f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
