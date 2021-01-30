@@ -3,7 +3,7 @@ import os
 import json
 from wish_swap.transfers.models import Transfer
 from wish_swap.networks.models import GasInfo
-from wish_swap.settings import NETWORKS
+from wish_swap.settings import NETWORKS, TX_STATUS_CHECK_TIMEOUT
 import time
 
 
@@ -31,10 +31,12 @@ def send_transfer_to_queue(transfer):
     connection.close()
 
 
-def parse_execute_transfer_message(message):
+def parse_execute_transfer_message(message, queue):
     transfer = Transfer.objects.get(id=message['transferId'])
+    print(f'{queue}: received transfer:\n{transfer}', flush=True)
+
     if transfer.status not in ('WAITING FOR TRANSFER', 'HIGH GAS PRICE'):
-        print(f'TRANSFER EXECUTING: there was already a transfer attempt', flush=True)
+        print(f'{queue}: there was already an attempt for transfer\n{transfer}', flush=True)
         return
 
     network = transfer.network
@@ -46,47 +48,35 @@ def parse_execute_transfer_message(message):
         if gas_price > gas_price_limit:
             transfer.status = 'HIGH GAS PRICE'
             transfer.save()
-            print(f'TRANSFER EXECUTING: {transfer.token.symbol} transfer will be executed later due to '
-                  f'high gas price in {network} network ({gas_price} Gwei > {gas_price_limit} Gwei)', flush=True)
+            print(f'{queue}: high gas price ({gas_price} Gwei > {gas_price_limit} Gwei), '
+                  f'postpone transfer:\n{transfer}', flush=True)
             return
 
         transfer.execute()
         transfer.save()
 
         if transfer.status == 'FAIL':
-            print(f'TRANSFER EXECUTING: transfer failed with error {transfer.tx_error}', flush=True)
+            print(f'{queue}: failed transfer:\n{transfer}', flush=True)
         else:
-            decimals = (10 ** transfer.token.decimals)
-            symbol = transfer.token.symbol
-            print(f'TRANSFER EXECUTING: pending transfer {transfer.tx_hash} '
-                  f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
-                  f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
-
             while transfer.status == 'PENDING':
-                print(f'TRANSFER EXECUTING: pending...', flush=True)
-                time.sleep(10)
+                print(f'{queue}: pending transfer:\n{transfer}', flush=True)
+                print(f'{queue}: waiting {TX_STATUS_CHECK_TIMEOUT} seconds before next status check...', flush=True)
+                time.sleep(TX_STATUS_CHECK_TIMEOUT)
                 transfer.update_status()
                 transfer.save()
-
-            if transfer.status == 'WAITING FOR CONFIRM':
-                print(f'TRANSFER EXECUTING: successful transfer {transfer.tx_hash} '
-                      f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
-                      f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
+            if transfer.status == 'SUCCESS':
+                print(f'{queue}: successful transfer:\n{transfer}', flush=True)
             else:
-                print(f'TRANSFER EXECUTING: transfer failed after pending', flush=True)
+                print(f'{queue}: failed transfer:\n{transfer}', flush=True)
     elif network == 'Binance-Chain':
         transfer.execute()
         transfer.save()
 
         if transfer.status == 'FAIL':
-            print(f'TRANSFER EXECUTING: transfer failed with error {transfer.tx_error}', flush=True)
+            print(f'{queue}: failed transfer:\n{transfer}', flush=True)
         else:
-            decimals = (10 ** transfer.token.decimals)
-            symbol = transfer.token.symbol
-            print(f'TRANSFER EXECUTING: successful transfer {transfer.tx_hash} '
-                  f'{transfer.amount / decimals} {symbol} to {transfer.address}, '
-                  f'(fee) {transfer.fee_amount / decimals} {symbol} to {transfer.fee_address}', flush=True)
+            print(f'{queue}: successful transfer:\n{transfer}', flush=True)
 
     timeout = NETWORKS[network]['transfer_timeout']
-    print(f'TRANSFER EXECUTING: waiting {timeout} seconds before next transfer', flush=True)
+    print(f'{queue}: waiting {timeout} seconds before next transfer...', flush=True)
     time.sleep(timeout)

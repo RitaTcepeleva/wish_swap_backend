@@ -60,7 +60,7 @@ class Receiver(threading.Thread):
 
     def execute_transfer(self, message):
         print('RECEIVER: execute transfer message has been received', flush=True)
-        parse_execute_transfer_message(message)
+        parse_execute_transfer_message(message, self.network)
 
 
     def callback(self, ch, method, properties, body):

@@ -20,6 +20,16 @@ class Transfer(models.Model):
     status = models.CharField(max_length=50, default='WAITING FOR TRANSFER')
     network = models.CharField(max_length=100)
 
+    def __str__(self):
+        return (f'\taddress: {self.address}\n'
+                f'\tamount: {self.amount / (10 ** self.token.decimals)}\n'
+                f'\tfee address: {self.fee_address}\n'
+                f'\tfee amount: {self.fee_amount / (10 ** self.token.decimals)}\n'
+                f'\tnetwork: {self.network}\n'
+                f'\tstatus: {self.status}\n'
+                f'\ttx hash: {self.tx_hash}\n'
+                f'\ttx error: {self.tx_error}')
+
     def _swap_contract_transfer(self):
         network = NETWORKS[self.token.network]
         w3 = Web3(HTTPProvider(network['node']))
