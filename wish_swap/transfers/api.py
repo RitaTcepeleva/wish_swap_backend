@@ -33,10 +33,10 @@ def send_transfer_to_queue(transfer):
 
 def parse_execute_transfer_message(message, queue):
     transfer = Transfer.objects.get(id=message['transferId'])
-    print(f'{queue}: received transfer:\n{transfer}', flush=True)
+    print(f'{queue}: received transfer {transfer}', flush=True)
 
     if transfer.status not in ('WAITING FOR TRANSFER', 'HIGH GAS PRICE'):
-        print(f'{queue}: there was already an attempt for transfer\n{transfer}', flush=True)
+        print(f'{queue}: there was already an attempt for transfer {transfer}', flush=True)
         return
 
     network = transfer.network
@@ -49,33 +49,33 @@ def parse_execute_transfer_message(message, queue):
             transfer.status = 'HIGH GAS PRICE'
             transfer.save()
             print(f'{queue}: high gas price ({gas_price} Gwei > {gas_price_limit} Gwei), '
-                  f'postpone transfer:\n{transfer}', flush=True)
+                  f'postpone transfer {transfer}', flush=True)
             return
 
         transfer.execute()
         transfer.save()
 
         if transfer.status == 'FAIL':
-            print(f'{queue}: failed transfer:\n{transfer}', flush=True)
+            print(f'{queue}: failed transfer {transfer}', flush=True)
         else:
             while transfer.status == 'PENDING':
-                print(f'{queue}: pending transfer:\n{transfer}', flush=True)
+                print(f'{queue}: pending transfer {transfer}', flush=True)
                 print(f'{queue}: waiting {TX_STATUS_CHECK_TIMEOUT} seconds before next status check...', flush=True)
                 time.sleep(TX_STATUS_CHECK_TIMEOUT)
                 transfer.update_status()
                 transfer.save()
             if transfer.status == 'SUCCESS':
-                print(f'{queue}: successful transfer:\n{transfer}', flush=True)
+                print(f'{queue}: successful transfer {transfer}', flush=True)
             else:
-                print(f'{queue}: failed transfer:\n{transfer}', flush=True)
+                print(f'{queue}: failed transfer {transfer}', flush=True)
     elif network == 'Binance-Chain':
         transfer.execute()
         transfer.save()
 
         if transfer.status == 'FAIL':
-            print(f'{queue}: failed transfer:\n{transfer}', flush=True)
+            print(f'{queue}: failed transfer {transfer}', flush=True)
         else:
-            print(f'{queue}: successful transfer:\n{transfer}', flush=True)
+            print(f'{queue}: successful transfer {transfer}', flush=True)
 
     timeout = NETWORKS[network]['transfer_timeout']
     print(f'{queue}: waiting {timeout} seconds before next transfer...', flush=True)
