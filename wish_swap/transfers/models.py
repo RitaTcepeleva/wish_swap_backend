@@ -65,7 +65,7 @@ class Transfer(models.Model):
         try:
             receipt = w3.eth.getTransactionReceipt(self.tx_hash)
             if receipt['status'] == 1:
-                self.status = 'WAITING FOR CONFIRM'
+                self.status = 'SUCCESS'
             else:
                 self.status = 'PENDING'
         except TransactionNotFound:
