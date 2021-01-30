@@ -21,10 +21,11 @@ class Transfer(models.Model):
     network = models.CharField(max_length=100)
 
     def __str__(self):
+        symbol = self.token.symbol
         return (f'\n\taddress: {self.address}\n'
-                f'\tamount: {self.amount / (10 ** self.token.decimals)}\n'
+                f'\tamount: {self.amount / (10 ** self.token.decimals)} {symbol}\n'
                 f'\tfee address: {self.fee_address}\n'
-                f'\tfee amount: {self.fee_amount / (10 ** self.token.decimals)}\n'
+                f'\tfee amount: {self.fee_amount / (10 ** self.token.decimals)} {symbol}\n'
                 f'\tnetwork: {self.network}\n'
                 f'\tstatus: {self.status}\n'
                 f'\ttx hash: {self.tx_hash}\n'
