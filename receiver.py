@@ -64,7 +64,7 @@ class Receiver(threading.Thread):
 
 
     def callback(self, ch, method, properties, body):
-        print('RECEIVER: received', method, properties, body, flush=True)
+        # print('RECEIVER: received', method, properties, body, flush=True)
         try:
             message = json.loads(body.decode())
             if message.get('status', '') == 'COMMITTED':
