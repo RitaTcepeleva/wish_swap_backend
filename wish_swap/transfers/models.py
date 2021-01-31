@@ -22,14 +22,14 @@ class Transfer(models.Model):
 
     def __str__(self):
         symbol = self.token.symbol
-        return (f'\n\taddress: {self.address}\n'
+        return (f'\taddress: {self.address}\n'
                 f'\tamount: {self.amount / (10 ** self.token.decimals)} {symbol}\n'
                 f'\tfee address: {self.fee_address}\n'
                 f'\tfee amount: {self.fee_amount / (10 ** self.token.decimals)} {symbol}\n'
                 f'\tnetwork: {self.network}\n'
                 f'\tstatus: {self.status}\n'
                 f'\ttx hash: {self.tx_hash}\n'
-                f'\ttx error: {self.tx_error}\n')
+                f'\ttx error: {self.tx_error}')
 
     def _swap_contract_transfer(self):
         network = NETWORKS[self.token.network]

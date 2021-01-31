@@ -66,16 +66,16 @@ def parse_payment(message, queue):
             transfer_network_number=network_number,
         )
         payment.save()
-        print(f'{queue}: payment saved {payment}', flush=True)
+        print(f'{queue}: payment saved \n{payment}\n', flush=True)
 
         transfer = create_transfer_if_payment_valid(payment)
         if transfer:
-            print(f'{queue}: payment validation success, send transfer to queue {transfer}', flush=True)
+            print(f'{queue}: payment validation success, send transfer to queue \n{payment}\n', flush=True)
             send_transfer_to_queue(transfer)
         else:
-            print(f'{queue}: payment validation failed, abort transfer {payment}', flush=True)
+            print(f'{queue}: payment validation failed, abort transfer \n{payment}\n', flush=True)
     else:
-        print(f'{queue}: tx {tx_hash} already registered', flush=True)
+        print(f'{queue}: tx {tx_hash} already registered\n', flush=True)
 
 
 def parse_payment_manually(tx_hash, network_name, dex_name):

@@ -36,7 +36,7 @@ def parse_execute_transfer_message(message, queue):
     print(f'{queue}: received transfer {transfer}', flush=True)
 
     if transfer.status not in ('WAITING FOR TRANSFER', 'HIGH GAS PRICE'):
-        print(f'{queue}: there was already an attempt for transfer {transfer}', flush=True)
+        print(f'{queue}: there was already an attempt for transfer \n{transfer}\n', flush=True)
         return
 
     network = transfer.network
@@ -49,28 +49,28 @@ def parse_execute_transfer_message(message, queue):
             transfer.status = 'HIGH GAS PRICE'
             transfer.save()
             print(f'{queue}: high gas price ({gas_price} Gwei > {gas_price_limit} Gwei), '
-                  f'postpone transfer {transfer}', flush=True)
+                  f'postpone transfer \n{transfer}\n', flush=True)
             return
 
     transfer.execute()
     transfer.save()
 
     if transfer.status == 'FAIL':
-        print(f'{queue}: failed transfer {transfer}', flush=True)
+        print(f'{queue}: failed transfer \n{transfer}\n', flush=True)
     else:
         transfer.update_status()
         transfer.save()
         while transfer.status == 'PENDING':
-            print(f'{queue}: pending transfer {transfer}', flush=True)
-            print(f'{queue}: waiting {TX_STATUS_CHECK_TIMEOUT} seconds before next status check...', flush=True)
+            print(f'{queue}: pending transfer \n{transfer}\n', flush=True)
+            print(f'{queue}: waiting {TX_STATUS_CHECK_TIMEOUT} seconds before next status check...\n', flush=True)
             time.sleep(TX_STATUS_CHECK_TIMEOUT)
             transfer.update_status()
             transfer.save()
         if transfer.status == 'SUCCESS':
-            print(f'{queue}: successful transfer {transfer}', flush=True)
+            print(f'{queue}: successful transfer \n{transfer}\n', flush=True)
         else:
-            print(f'{queue}: failed transfer after pending {transfer}', flush=True)
+            print(f'{queue}: failed transfer after pending \n{transfer}\n', flush=True)
 
     timeout = NETWORKS[network]['transfer_timeout']
-    print(f'{queue}: waiting {timeout} seconds before next transfer...', flush=True)
+    print(f'{queue}: waiting {timeout} seconds before next transfer...\n', flush=True)
     time.sleep(timeout)

@@ -12,9 +12,9 @@ class Payment(models.Model):
 
     def __str__(self):
         symbol = self.token.symbol
-        return (f'\n\ttx hash: {self.tx_hash}\n'
+        return (f'\ttx hash: {self.tx_hash}\n'
                 f'\taddress: {self.address}\n'
                 f'\tamount: {self.amount / (10 ** self.token.decimals)} {symbol}\n'
                 f'\ttransfer address: {self.transfer_address}\n'
                 f'\ttransfer network number: {self.transfer_network_number}\n'
-                f'\tvalidation status: {self.validation_status}\n')
+                f'\tvalidation status: {self.validation_status}')
