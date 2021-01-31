@@ -50,6 +50,7 @@ class Receiver(threading.Thread):
         print(f'{self.network}: transfer message has been received\n', flush=True)
         transfer = Transfer.objects.get(pk=message['transferId'])
         if transfer.status == 'SUCCESS':
+            print(f'{self.network}: transfer has already been confirmed\n', flush=True)
             return
         if message['success']:
             transfer = Transfer.objects.get(pk=message['transferId'])
