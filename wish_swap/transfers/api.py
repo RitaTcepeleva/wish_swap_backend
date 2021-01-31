@@ -33,7 +33,7 @@ def send_transfer_to_queue(transfer):
 
 def parse_execute_transfer_message(message, queue):
     transfer = Transfer.objects.get(id=message['transferId'])
-    print(f'{queue}: received transfer {transfer}', flush=True)
+    print(f'{queue}: received transfer \n{transfer}\n', flush=True)
 
     if transfer.status not in ('WAITING FOR TRANSFER', 'HIGH GAS PRICE'):
         print(f'{queue}: there was already an attempt for transfer \n{transfer}\n', flush=True)

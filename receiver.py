@@ -25,7 +25,8 @@ class Receiver(threading.Thread):
             'rabbitmq',
             5672,
             os.getenv('RABBITMQ_DEFAULT_VHOST', 'wish_swap'),
-            pika.PlainCredentials(os.getenv('RABBITMQ_DEFAULT_USER', 'wish_swap'), os.getenv('RABBITMQ_DEFAULT_PASS', 'wish_swap')),
+            pika.PlainCredentials(os.getenv('RABBITMQ_DEFAULT_USER', 'wish_swap'),
+                                  os.getenv('RABBITMQ_DEFAULT_PASS', 'wish_swap')),
         ))
         channel = connection.channel()
         channel.queue_declare(
@@ -38,29 +39,29 @@ class Receiver(threading.Thread):
             queue=self.network,
             on_message_callback=self.callback
         )
-        print(f'RECEIVER: `{self.network}` queue was started', flush=True)
+        print(f'{self.network}: queue was started', flush=True)
         channel.start_consuming()
 
     def payment(self, message):
-        print('RECEIVER: payment message has been received', flush=True)
+        print(f'{self.network}: payment message has been received\n', flush=True)
         parse_payment(message, self.network)
 
     def transfer(self, message):
-        print('RECEIVER: transfer message has been received', flush=True)
+        print(f'{self.network}: transfer message has been received\n', flush=True)
         transfer = Transfer.objects.get(pk=message['transferId'])
         if transfer.status == 'SUCCESS':
             return
         if message['success']:
             transfer = Transfer.objects.get(pk=message['transferId'])
             transfer.status = 'SUCCESS'
-            print('RECEIVER: transfer confirmed successfully', flush=True)
+            print(f'{self.network}: transfer confirmed successfully\n', flush=True)
         else:
             transfer.status = 'FAIL'
-            print('RECEIVER: transfer was not completed, confirmation fail', flush=True)
+            print(f'{self.network}: transfer was not completed, confirmation fail\n', flush=True)
         transfer.save()
 
     def execute_transfer(self, message):
-        print('RECEIVER: execute transfer message has been received', flush=True)
+        print(f'{self.network}: execute transfer message has been received\n', flush=True)
         parse_execute_transfer_message(message, self.network)
 
     def callback(self, ch, method, properties, body):
@@ -76,7 +77,7 @@ class Receiver(threading.Thread):
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def unknown_handler(self, message):
-        print('RECEIVER: Unknown message has been received', message, flush=True)
+        print(f'{self.network}: unknown message has been received\n', message, flush=True)
 
 
 for network in NETWORKS.keys():
