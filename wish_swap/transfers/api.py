@@ -58,6 +58,8 @@ def parse_execute_transfer_message(message, queue):
     if transfer.status == 'FAIL':
         print(f'{queue}: failed transfer {transfer}', flush=True)
     else:
+        transfer.update_status()
+        transfer.save()
         while transfer.status == 'PENDING':
             print(f'{queue}: pending transfer {transfer}', flush=True)
             print(f'{queue}: waiting {TX_STATUS_CHECK_TIMEOUT} seconds before next status check...', flush=True)
@@ -67,7 +69,7 @@ def parse_execute_transfer_message(message, queue):
         if transfer.status == 'SUCCESS':
             print(f'{queue}: successful transfer {transfer}', flush=True)
         else:
-            print(f'{queue}: failed transfer {transfer}', flush=True)
+            print(f'{queue}: failed transfer after pending {transfer}', flush=True)
 
     timeout = NETWORKS[network]['transfer_timeout']
     print(f'{queue}: waiting {timeout} seconds before next transfer...', flush=True)
