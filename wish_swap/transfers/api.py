@@ -52,30 +52,22 @@ def parse_execute_transfer_message(message, queue):
                   f'postpone transfer {transfer}', flush=True)
             return
 
-        transfer.execute()
-        transfer.save()
+    transfer.execute()
+    transfer.save()
 
-        if transfer.status == 'FAIL':
-            print(f'{queue}: failed transfer {transfer}', flush=True)
-        else:
-            while transfer.status == 'PENDING':
-                print(f'{queue}: pending transfer {transfer}', flush=True)
-                print(f'{queue}: waiting {TX_STATUS_CHECK_TIMEOUT} seconds before next status check...', flush=True)
-                time.sleep(TX_STATUS_CHECK_TIMEOUT)
-                transfer.update_status()
-                transfer.save()
-            if transfer.status == 'SUCCESS':
-                print(f'{queue}: successful transfer {transfer}', flush=True)
-            else:
-                print(f'{queue}: failed transfer {transfer}', flush=True)
-    elif network == 'Binance-Chain':
-        transfer.execute()
-        transfer.save()
-
-        if transfer.status == 'FAIL':
-            print(f'{queue}: failed transfer {transfer}', flush=True)
-        else:
+    if transfer.status == 'FAIL':
+        print(f'{queue}: failed transfer {transfer}', flush=True)
+    else:
+        while transfer.status == 'PENDING':
+            print(f'{queue}: pending transfer {transfer}', flush=True)
+            print(f'{queue}: waiting {TX_STATUS_CHECK_TIMEOUT} seconds before next status check...', flush=True)
+            time.sleep(TX_STATUS_CHECK_TIMEOUT)
+            transfer.update_status()
+            transfer.save()
+        if transfer.status == 'SUCCESS':
             print(f'{queue}: successful transfer {transfer}', flush=True)
+        else:
+            print(f'{queue}: failed transfer {transfer}', flush=True)
 
     timeout = NETWORKS[network]['transfer_timeout']
     print(f'{queue}: waiting {timeout} seconds before next transfer...', flush=True)

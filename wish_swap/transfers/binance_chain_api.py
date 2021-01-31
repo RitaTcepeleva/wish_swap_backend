@@ -1,5 +1,6 @@
 from subprocess import Popen, PIPE
 import json
+import requests
 from wish_swap.settings import NETWORKS
 
 
@@ -52,3 +53,9 @@ class BinanceChainInterface:
             process.stdin.flush()
         stdout, stderr = process.communicate()
         return process.returncode == 0, stdout.decode(), stderr.decode()
+
+
+def get_tx_info(tx_hash):
+    url = f'{NETWORKS["Binance-Chain"]["api-url"]}tx/{tx_hash}?format=json'
+    response = requests.get(url)
+    return json.loads(response.text) if response.status_code == 200 else None
