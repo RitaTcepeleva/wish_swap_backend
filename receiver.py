@@ -42,9 +42,8 @@ class Receiver(threading.Thread):
         channel.start_consuming()
 
     def payment(self, message):
-        message['fromNetwork'] = self.network
         print('RECEIVER: payment message has been received', flush=True)
-        parse_payment(message)
+        parse_payment(message, self.network)
 
     def transfer(self, message):
         print('RECEIVER: transfer message has been received', flush=True)
@@ -61,7 +60,6 @@ class Receiver(threading.Thread):
     def execute_transfer(self, message):
         print('RECEIVER: execute transfer message has been received', flush=True)
         parse_execute_transfer_message(message, self.network)
-
 
     def callback(self, ch, method, properties, body):
         # print('RECEIVER: received', method, properties, body, flush=True)

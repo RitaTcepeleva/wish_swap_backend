@@ -9,3 +9,13 @@ class Payment(models.Model):
     transfer_address = models.CharField(max_length=100)
     transfer_network_number = models.IntegerField()
     validation_status = models.CharField(max_length=100, default='WAITING FOR VALIDATION')
+
+    def __str__(self):
+        symbol = self.token.symbol
+        return (f'\n\ttx hash: {self.tx_hash}\n'
+                f'\taddress: {self.address}\n'
+                f'\tamount: {self.amount / (10 ** self.token.decimals)} {symbol}\n'
+                f'\ttransfer address: {self.transfer_address}\n'
+                f'\ttransfer network number: {self.transfer_network_number}\n'
+                f'\tvalidation status: {self.validation_status}'
+                f'\tnetwork: {self.network}\n')

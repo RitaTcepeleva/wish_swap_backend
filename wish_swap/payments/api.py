@@ -14,18 +14,15 @@ def create_transfer_if_payment_valid(payment):
     try:
         to_network = NETWORKS_BY_NUMBER[payment.transfer_network_number]
     except KeyError:
-        payment.validation_status = 'INVALID NETWORK NUMBER'
+        payment.validation_status = 'NON EXISTENT NETWORK'
         payment.save()
-        print('PARSING PAYMENT: network associated with number '
-              f'{payment.transfer_network_number} doesn`t exist!', flush=True)
         return None
 
     try:
         to_token = payment.token.dex[to_network]
     except Token.DoesNotExist:
-        payment.validation_status = 'INVALID NETWORK NUMBER'
+        payment.validation_status = 'NON EXISTENT TOKEN'
         payment.save()
-        print(f'PARSING PAYMENT: matching token doesn`t exist in {to_network} network!', flush=True)
         return None
 
     fee_amount = to_token.fee * (10 ** to_token.decimals)
@@ -33,7 +30,6 @@ def create_transfer_if_payment_valid(payment):
     if payment.amount - fee_amount <= 0:
         payment.validation_status = 'SMALL AMOUNT'
         payment.save()
-        print(f'PARSING PAYMENT: abort transfer due to commission is more than transfer amount', flush=True)
         return None
 
     payment.validation_status = 'SUCCESS'
@@ -52,7 +48,7 @@ def create_transfer_if_payment_valid(payment):
     return transfer
 
 
-def parse_payment(message):
+def parse_payment(message, queue):
     network_number = message['networkNumber']
     tx_hash = message['transactionHash']
     from_address = message['address']
@@ -70,15 +66,16 @@ def parse_payment(message):
             transfer_network_number=network_number,
         )
         payment.save()
-        print(f'PARSING PAYMENT: payment {payment.tx_hash} from {payment.address} '
-              f'for {amount / (10 ** from_token.decimals)} {from_token.symbol} to {payment.transfer_address}'
-              f' in network {payment.transfer_network_number} successfully saved', flush=True)
+        print(f'{queue}: payment saved {payment}', flush=True)
 
         transfer = create_transfer_if_payment_valid(payment)
         if transfer:
+            print(f'{queue}: payment validation success, send transfer to queue {transfer}', flush=True)
             send_transfer_to_queue(transfer)
+        else:
+            print(f'{queue}: payment validation failed, abort transfer {payment}', flush=True)
     else:
-        print(f'PARSING PAYMENT: tx {tx_hash} already registered', flush=True)
+        print(f'{queue}: tx {tx_hash} already registered', flush=True)
 
 
 def parse_payment_manually(tx_hash, network_name, dex_name):
@@ -102,7 +99,7 @@ def parse_payment_manually(tx_hash, network_name, dex_name):
             'toAddress': event.newAddress,
             'networkNumber': event.blockchain
         }
-        parse_payment(message)
+        parse_payment(message, network_name)
     elif network_name == 'Binance-Chain':
         url = f'{NETWORKS[network_name]["api-url"]}tx/{tx_hash}?format=json'
         response = requests.get(url)
@@ -134,4 +131,4 @@ def parse_payment_manually(tx_hash, network_name, dex_name):
             'toAddress': memo[1:],
             'networkNumber': int(memo[0])
         }
-        parse_payment(message)
+        parse_payment(message, network_name)
