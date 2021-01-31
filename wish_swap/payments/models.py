@@ -17,4 +17,4 @@ class Payment(models.Model):
                 f'\tamount: {self.amount / (10 ** self.token.decimals)} {symbol}\n'
                 f'\ttransfer address: {self.transfer_address}\n'
                 f'\ttransfer network number: {self.transfer_network_number}\n'
-                f'\tvalidation status: {self.validation_status}')
+                f'\tvalidation status: {self.validation_status}\n')
