@@ -48,6 +48,8 @@ class Receiver(threading.Thread):
     def transfer(self, message):
         print('RECEIVER: transfer message has been received', flush=True)
         transfer = Transfer.objects.get(pk=message['transferId'])
+        if transfer.status == 'SUCCESS':
+            return
         if message['success']:
             transfer = Transfer.objects.get(pk=message['transferId'])
             transfer.status = 'SUCCESS'
