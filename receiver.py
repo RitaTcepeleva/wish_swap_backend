@@ -46,6 +46,7 @@ class Receiver(threading.Thread):
         print(f'{self.network}: payment message has been received\n', flush=True)
         parse_payment(message, self.network)
 
+    '''
     def transfer(self, message):
         print(f'{self.network}: transfer message has been received\n', flush=True)
         transfer = Transfer.objects.get(pk=message['transferId'])
@@ -60,6 +61,7 @@ class Receiver(threading.Thread):
             transfer.status = 'FAIL'
             print(f'{self.network}: transfer was not completed, confirmation fail\n', flush=True)
         transfer.save()
+    '''
 
     def execute_transfer(self, message):
         print(f'{self.network}: execute transfer message has been received\n', flush=True)
