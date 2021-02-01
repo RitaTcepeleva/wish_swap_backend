@@ -32,6 +32,7 @@ class BinScanner(ScannerPolling):
                 self.process_block(block)
                 time.sleep(2)
             time.sleep(10)
+            #disabled confirms
             '''transfers = session.query(Transfer).filter(getattr(Transfer, 'status').in_(status)).filter(getattr(Transfer, 'network').in_(network_types)).all()
             print(f'len:{len(transfers)}')
             for transfer in transfers:
