@@ -32,11 +32,11 @@ class BinScanner(ScannerPolling):
                 self.process_block(block)
                 time.sleep(2)
             time.sleep(10)
-            transfers = session.query(Transfer).filter(getattr(Transfer, 'status').in_(status)).filter(getattr(Transfer, 'network').in_(network_types)).all()
+            '''transfers = session.query(Transfer).filter(getattr(Transfer, 'status').in_(status)).filter(getattr(Transfer, 'network').in_(network_types)).all()
             print(f'len:{len(transfers)}')
             for transfer in transfers:
                 confirm=self.network.confirm_transfer(transfer)
-                time.sleep(2)
+                time.sleep(2)'''
         print('got out of the main loop')
 
     
