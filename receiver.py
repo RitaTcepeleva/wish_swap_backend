@@ -27,7 +27,7 @@ class Receiver(threading.Thread):
             os.getenv('RABBITMQ_DEFAULT_VHOST', 'wish_swap'),
             pika.PlainCredentials(os.getenv('RABBITMQ_DEFAULT_USER', 'wish_swap'),
                                   os.getenv('RABBITMQ_DEFAULT_PASS', 'wish_swap')),
-            heartbeat=None,
+            heartbeat=0,
         ))
         channel = connection.channel()
         channel.queue_declare(
