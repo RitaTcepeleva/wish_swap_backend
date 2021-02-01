@@ -8,6 +8,7 @@ from wish_swap.settings import NETWORKS
 import requests
 import json
 from wish_swap.transfers.api import send_transfer_to_queue
+from receiver import send_rabbitmq_message
 
 
 def create_transfer_if_payment_valid(payment):
@@ -48,6 +49,14 @@ def create_transfer_if_payment_valid(payment):
     return transfer
 
 
+def send_payment_to_bot(transfer, payment):
+    if transfer:
+        send_rabbitmq_message(transfer.network + '-bot', 'payment', {'paymentId': payment.id})
+    else:
+        for network in NETWORKS.keys():
+            send_rabbitmq_message(network + '-bot', 'payment', {'paymentId': payment.id})
+
+
 def parse_payment(message, queue):
     network_number = message['networkNumber']
     tx_hash = message['transactionHash']
@@ -69,6 +78,7 @@ def parse_payment(message, queue):
         print(f'{queue}: payment saved \n{payment}\n', flush=True)
 
         transfer = create_transfer_if_payment_valid(payment)
+        send_payment_to_bot(transfer, payment)
         if transfer:
             print(f'{queue}: payment validation success, send transfer to queue \n{payment}\n', flush=True)
             send_transfer_to_queue(transfer)
