@@ -7,5 +7,5 @@ pub.subscribe(BinPaymentMonitor.on_new_block_event, 'Binance-Chain')
 pub.subscribe(EthPaymentMonitor.on_new_block_event, 'Ethereum')
 pub.subscribe(BSPaymentMonitor.on_new_block_event, 'Binance-Smart-Chain')
 
-pub.subscribe(transfers.TransferMonitor.on_new_block_event, 'Ethereum')
-pub.subscribe(transfers.BSCTransferMonitor.on_new_block_event, 'Binance-Smart-Chain')
+#pub.subscribe(transfers.TransferMonitor.on_new_block_event, 'Ethereum')
+#pub.subscribe(transfers.BSCTransferMonitor.on_new_block_event, 'Binance-Smart-Chain')
