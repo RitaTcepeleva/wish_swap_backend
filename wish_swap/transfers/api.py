@@ -5,6 +5,7 @@ from wish_swap.transfers.models import Transfer
 from wish_swap.networks.models import GasInfo
 from wish_swap.settings import NETWORKS, TX_STATUS_CHECK_TIMEOUT
 import time
+from receiver import send_rabbitmq_message
 
 
 def send_transfer_to_queue(transfer):
@@ -31,6 +32,10 @@ def send_transfer_to_queue(transfer):
     connection.close()
 
 
+def send_transfer_to_bot(transfer):
+    send_rabbitmq_message(transfer.network + '-bot', 'transfer', {'transferId': transfer.id})
+
+
 def parse_execute_transfer_message(message, queue):
     transfer = Transfer.objects.get(id=message['transferId'])
     print(f'{queue}: received transfer \n{transfer}\n', flush=True)
@@ -50,6 +55,7 @@ def parse_execute_transfer_message(message, queue):
             transfer.save()
             print(f'{queue}: high gas price ({gas_price} Gwei > {gas_price_limit} Gwei), '
                   f'postpone transfer \n{transfer}\n', flush=True)
+            send_transfer_to_bot(transfer)
             return
 
     transfer.execute()
@@ -57,9 +63,11 @@ def parse_execute_transfer_message(message, queue):
 
     if transfer.status == 'FAIL':
         print(f'{queue}: failed transfer \n{transfer}\n', flush=True)
+        send_transfer_to_bot(transfer)
     else:
         transfer.update_status()
         transfer.save()
+        send_transfer_to_bot(transfer)
         while transfer.status == 'PENDING':
             print(f'{queue}: pending transfer \n{transfer}\n', flush=True)
             print(f'{queue}: waiting {TX_STATUS_CHECK_TIMEOUT} seconds before next status check...\n', flush=True)
@@ -70,6 +78,7 @@ def parse_execute_transfer_message(message, queue):
             print(f'{queue}: successful transfer \n{transfer}\n', flush=True)
         else:
             print(f'{queue}: failed transfer after pending \n{transfer}\n', flush=True)
+        send_transfer_to_bot(transfer)
 
     timeout = NETWORKS[network]['transfer_timeout']
     print(f'{queue}: waiting {timeout} seconds before next transfer...\n', flush=True)
