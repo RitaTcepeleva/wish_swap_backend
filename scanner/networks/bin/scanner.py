@@ -1,3 +1,4 @@
+import os
 import collections
 import time
 
@@ -9,7 +10,7 @@ from scanner.mywish_models.models import Dex, Token, Transfer, session
 from scanner.eventscanner.queue.pika_handler import send_to_backend
 
 class BinScanner(ScannerPolling):
-
+    base_dir = 'scanner/settings'
 
     def poller(self):
         print('hello from {}'.format(self.network.type), flush=True)
@@ -40,31 +41,38 @@ class BinScanner(ScannerPolling):
                     confirm=self.network.confirm_transfer(transfer)
                     time.sleep(2)'''
                 try:
-                    with open(os.path.join(self.base_dir, 'Binance-Chain', 'status'), '+') as file:
+                    with open(os.path.join(self.base_dir, 'Binance-Chain', 'status'), 'r') as file:
                         status = file.read()
                         if status == 'dead':
                             send_to_backend('scanner-up', 'Binance-Chain-bot', 'scanner ressurected')
+                    with open(os.path.join(self.base_dir, 'Binance-Chain', 'status'), 'w') as file:
                         file.write('alive')
                 except FileNotFoundError:
                     pass
             print('got out of the main loop')
-        except:
+        except Exception as e:
+            print(e)
             send_to_backend('scanner-crash', 'Binance-Chain-bot', 'scanner is dead')
             try:
-                with open(os.path.join(self.base_dir, self.type, 'status'), 'w') as file:
-                    file.write('dead')
-                return block
+                with open(os.path.join(self.base_dir, 'Binance-Chain', 'status'), 'r') as file:
+                    status = file.read()
+                    if status == 'alive':
+                        write = True
+                    else:
+                        write = False
+                if write:
+                    with open(os.path.join(self.base_dir, 'Binance-Chain', 'status'), 'w') as file:
+                        file.write('dead')
             except FileNotFoundError:
                 print('except creation')
-                filename = os.path.join(self.base_dir, self.type)
+                filename = os.path.join(self.base_dir, 'Binance-Chain')
                 os.makedirs(filename, exist_ok=True)
-                with open(os.path.join(self.base_dir, self.type, 'status'), 'w') as file:
+                with open(os.path.join(self.base_dir, 'Binance-Chain', 'status'), 'w') as file:
                     file.write('dead')
-                return block
-            time.sleep(10)
+            # time.sleep(10)
 
-    
-    def process_block(self, block: WrapperBlock):
+
+def process_block(self, block: WrapperBlock):
         address_transactions = collections.defaultdict(list)
         for transaction in block.transactions:
             self._check_tx_to(transaction, address_transactions)

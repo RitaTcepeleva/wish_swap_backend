@@ -57,7 +57,6 @@ class BinNetwork(WrapperNetwork):
             time.sleep(2)
 
         tx_count = client_transactions['total']
-        print(tx_count, flush=True)
         client_transactions = client_transactions['tx']
         offset = 0
         i = 0
